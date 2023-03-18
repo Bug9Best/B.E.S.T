@@ -8,7 +8,7 @@ import 'primevue/resources/themes/lara-light-teal/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
-// import './assets/main.css'
+import './assets/main.css'
 
 // Import PrimeVue components
 import Calendar from 'primevue/calendar';

@@ -1,13 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import AppLayout from '@/layout/AppLayout.vue';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: () => import('../views/Signin.vue')
-    },
     {
       path: '/signin',
       name: 'signin',
@@ -24,33 +21,52 @@ const router = createRouter({
       component: () => import('../views/Profile.vue')
     },
     {
-      path: '/course',
-      name: 'course',
-      component: () => import('../views/Course.vue')
-    },
-    {
-      path: '/course/:id',
-      name: 'course-detail',
-    },
-    {
-      path: '/course/:id/participants',
-      name: 'course-participants',
-    },
-    {
-      path: '/course/:id/files',
-      name: 'course-files',
-    },
-    {
-      path: '/course/:id/assignments',
-      name: 'course-assignments',
-    },
-    {
-      path: '/course/:id/assignments/:id',
-      name: 'course-assignment-detail',
-    },
-    {
-      path: '/chat/:id',
-      name: 'chat-detail',
+      path: '/',
+      name: 'home',
+      component: AppLayout,
+      children: [
+        {
+          path: 'course',
+          name: 'course',
+          component: () => import('../views/Course.vue')
+        },
+        {
+          path: 'calendar',
+          name: 'calendar',
+          component: () => import('../views/Calendar.vue')
+        },
+        {
+          path: 'assignment',
+          name: 'assignment',
+          component: () => import('../views/Assignment.vue')
+        },
+        {
+          path: 'chat',
+          name: 'chat',
+          component: () => import('../views/Chat.vue')
+        },
+        {
+          path: 'notification',
+          name: 'notification',
+          component: () => import('../views/Notification.vue')
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: () => import('../views/Profile.vue')
+        },
+        {
+          path: 'setting',
+          name: 'setting',
+          component: () => import('../views/Setting.vue')
+        },
+        // {
+        //   path: '/course_detail/:id',
+        //   name: 'course_detail',
+        //   component: () => import('../views/CourseDetail.vue'),
+        //   props: true
+        // },
+      ]
     },
   ]
 })
