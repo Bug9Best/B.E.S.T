@@ -36,6 +36,15 @@ const model = ref([
         ]
     },
 ]);
+
+const assistant = ref([
+    {
+        items: [
+            { label: 'About This Program', icon: 'pi pi-fw pi-verified', to: '/about' },
+            { label: 'Devloper Team', icon: 'pi pi-fw pi-users', to: '/team', },
+        ]
+    },
+]);
 </script>
 
 <template>
@@ -44,10 +53,15 @@ const model = ref([
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>
         </template>
-        <!-- <li class="absolute bottom-0 mr-4 mb-3">
-                                                <a href="https://www.primefaces.org/primeblocks-vue/#/" target="_blank">
-                                                    <img src="/layout/images/banner-primeblocks.png" alt="Prime Blocks" class="w-full mt-3" />
-                                                </a>
-                                            </li> -->
+    </ul>
+    <ul class="layout-menu flex flex-column flex-grow-0 flex-shrink-1 absolute bottom-0 mb-3">
+        <template v-for="(item, i) in assistant" :key="item">
+            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
+            <li v-if="item.separator" class="menu-separator"></li>
+            <div style="width: 260px;"></div>
+        </template>
     </ul>
 </template>
+
+<style>
+</style>

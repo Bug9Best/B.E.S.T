@@ -71,4 +71,4 @@ const isOutsideClicked = (event) => {
     </div>
 </template>
 
-<style  src="../assets/layout/layout.scss"></style>
+<style  src="../public/layout/layout.scss"></style>

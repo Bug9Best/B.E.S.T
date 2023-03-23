@@ -4,15 +4,17 @@ import router from './router'
 
 // Import PrimeVue, PrimeIcons and PrimeFlex
 import PrimeVue from 'primevue/config';
-import 'primevue/resources/themes/lara-light-teal/theme.css';
+import 'primevue/resources/themes/lara-light-blue/theme.css';
+// import 'primevue/resources/themes/vela-blue/theme.css';
+// import 'primevue/resources/themes/mira/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
-import './assets/main.css'
+import './public/main.css'
 
 // Import PrimeVue components
-import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
+import Calendar from 'primevue/calendar';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import InputMask from 'primevue/inputmask';
@@ -35,6 +37,10 @@ import Sidebar from 'primevue/sidebar';
 import Menu from 'primevue/menu';
 
 import TabMenu from 'primevue/tabmenu';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
+import ScrollPanel from 'primevue/scrollpanel';
+
 import Steps from 'primevue/steps';
 
 import FileUpload from 'primevue/fileupload';
@@ -71,6 +77,9 @@ app.component('ProgressSpinner', ProgressSpinner);
 app.component('Sidebar', Sidebar);
 app.component('Menu', Menu);
 app.component('TabMenu', TabMenu);
+app.component('TabView', TabView);
+app.component('TabPanel', TabPanel);
+app.component('ScrollPanel', ScrollPanel);
 app.component('Steps', Steps);
 app.component('FileUpload', FileUpload);
 app.component('DataTable', DataTable);

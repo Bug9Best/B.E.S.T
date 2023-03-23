@@ -60,12 +60,22 @@ const router = createRouter({
           name: 'setting',
           component: () => import('../views/Setting.vue')
         },
-        // {
-        //   path: '/course_detail/:id',
-        //   name: 'course_detail',
-        //   component: () => import('../views/CourseDetail.vue'),
-        //   props: true
-        // },
+        {
+          path: '/about',
+          name: 'about',
+          component: () => import('../views/About.vue')
+        },
+        {
+          path: '/team',
+          name: 'team',
+          component: () => import('../views/Team.vue')
+        },
+        {
+          path: '/course_detail/:id',
+          name: 'course_detail',
+          component: () => import('../views/CourseDetail.vue'),
+          props: true
+        },
       ]
     },
   ]

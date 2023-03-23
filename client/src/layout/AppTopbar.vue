@@ -130,7 +130,7 @@ export default {
                 <div class="flex align-items-center">
                     <p class="mt-3 mr-2 text-lg text-900">{{ this.fullName }}</p>
                     <div class="border-circle flex align-items-center justify-content-center"
-                        style="background-color: var(--teal-200); color: #ffffff; width: 30px; height: 30px;">
+                        style="background-color: var(--primary-color); color: #ffffff; width: 30px; height: 30px;">
                         {{ this.avatarLabel }}
                     </div>
 
