@@ -3,9 +3,10 @@ import * as bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 import { PrismaClient, Prisma } from "@prisma/client";
 import createHttpError from "http-errors";
+import { authenticate } from 'ldap-authentication'
 
 export const ldapLogin = async (email, password) => {
-    let authenticated = await authenticate({
+    let user = await authenticate({
         ldapOpts: { url: 'ldap://161.246.38.141' },
         userDn: 'it64070146@it.kmitl.ac.th',
         userPassword: 'Best1539..',
@@ -14,7 +15,7 @@ export const ldapLogin = async (email, password) => {
         username: 'it64070146',
         attributes: ['dn', 'sn', 'cn'],
     })
-    return authenticated
+    return user
 }
 
 export const login = async (email, password) => {
@@ -55,14 +56,6 @@ export const register = async (email, password, firstName, lastName) => {
         data: {
             email: email,
             password: hash,
-            firstName: firstName,
-            lastName: lastName,
-        }
-    })
-
-    const newProfile = await prisma.profile.create({
-        data: {
-            userId: newUser.id,
         }
     })
 
