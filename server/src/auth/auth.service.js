@@ -4,6 +4,19 @@ const prisma = new PrismaClient();
 import { PrismaClient, Prisma } from "@prisma/client";
 import createHttpError from "http-errors";
 
+export const ldapLogin = async (email, password) => {
+    let authenticated = await authenticate({
+        ldapOpts: { url: 'ldap://161.246.38.141' },
+        userDn: 'it64070146@it.kmitl.ac.th',
+        userPassword: 'Best1539..',
+        userSearchBase: 'dc=it,dc=kmitl,dc=ac,dc=th',
+        usernameAttribute: 'samaccountname',
+        username: 'it64070146',
+        attributes: ['dn', 'sn', 'cn'],
+    })
+    return authenticated
+}
+
 export const login = async (email, password) => {
     // find username
     const isEmail = await prisma.user.findUnique({

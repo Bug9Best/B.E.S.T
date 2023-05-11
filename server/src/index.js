@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import cors from "cors"
+
 import auth from "./auth/auth.controller.js";
 
 const port = 8080;

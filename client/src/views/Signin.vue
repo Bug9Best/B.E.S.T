@@ -1,4 +1,5 @@
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -9,7 +10,12 @@ export default {
     }
   },
   methods: {
-    login() {
+    async login() {
+      try {
+        const res = await axios.post('http://localhost:8080/api/auth/login', { ...this.loginData })
+      } catch (err) {
+        console.log(err.message)
+      }
     }
   }
 }

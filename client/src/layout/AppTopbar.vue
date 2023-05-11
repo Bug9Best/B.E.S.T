@@ -62,7 +62,7 @@ export default {
     data() {
         return {
             user: {},
-            fullName: '',
+            fullName: 'Natthaphon Ditthaviboon',
             avatarLabel: '',
             items: [
                 {
@@ -86,24 +86,24 @@ export default {
             ],
         }
     },
-    mounted() {
-        this.getLocalStorage();
-    },
+    // mounted() {
+    //     this.getLocalStorage();
+    // },
     methods: {
         toggle(event) {
             this.$refs.menu.toggle(event);
-        },
-        getLocalStorage() {
-            this.user = JSON.parse(localStorage.getItem('token'));
-            this.fullName = this.user.firstName + ' ' + this.user.lastName;
-            this.avatarLabel = this.user.firstName.charAt(0) + this.user.lastName.charAt(0);
         }
+        //     getLocalStorage() {
+        //         this.user = JSON.parse(localStorage.getItem('token'));
+        //         this.fullName = this.user.firstName + ' ' + this.user.lastName;
+        //         this.avatarLabel = this.user.firstName.charAt(0) + this.user.lastName.charAt(0);
+        //     }
     }
 }
 </script>
 
 <template>
-    <div class="layout-topbar">
+    <div class="layout-topbar ">
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
             <i class="pi pi-bars"></i>
         </button>
@@ -118,26 +118,28 @@ export default {
         </button>
 
         <div class="layout-topbar-menu flex align-items-center" :class="topbarMenuClasses">
-            <router-link to="/notification">
-                <button class="p-link layout-topbar-button mr-2">
-                    <i class="pi pi-bell"></i>
-                    <span>Notification</span>
-                </button>
-            </router-link>
+            <div class="hidden md:block">
+                <router-link to="/notification">
+                    <button class="p-link layout-topbar-button mr-2">
+                        <i class="pi pi-bell"></i>
+                        <span>Notification</span>
+                    </button>
+                </router-link>
 
-            <Button @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"
-                class="p-button-text p-button-plain px-3 py-0">
-                <div class="flex align-items-center">
-                    <p class="mt-3 mr-2 text-lg text-900">{{ this.fullName }}</p>
-                    <div class="border-circle flex align-items-center justify-content-center"
-                        style="background-color: var(--primary-color); color: #ffffff; width: 30px; height: 30px;">
-                        {{ this.avatarLabel }}
+                <Button @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"
+                    class="p-button-text p-button-plain px-3 py-0">
+                    <div class="flex align-items-center">
+                        <p class="mt-3 mr-2 text-lg text-900">{{ this.fullName }}</p>
+                        <div class="border-circle flex align-items-center justify-content-center"
+                            style="background-color: var(--primary-color); color: #ffffff; width: 30px; height: 30px;">
+                            {{ this.avatarLabel }}
+                        </div>
+
                     </div>
+                </Button>
 
-                </div>
-            </Button>
-
-            <Menu id="overlay_menu" ref="menu" :model="items" :popup="true"/>
+                <Menu class="block md:hidden" id="overlay_menu" ref="menu" :model="items" :popup="true" />
+            </div>
         </div>
     </div>
 </template>
