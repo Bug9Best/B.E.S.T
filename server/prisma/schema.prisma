@@ -11,179 +11,121 @@ datasource db {
 }
 
 model User {
-  id               Int                @id @default(autoincrement())
-  email            String             @unique
-  password         String
-  fname            String
-  lname            String
-  role             Role               @default(GUESS)
-  CourseUser       CourseUser[] //เราอยู่ในคอสไหนบ้าง
-  Course           Course[] //เราสร้างคอสไหนบ้าง
-  CourseInstructor CourseInstructor[] //เราเป็นอาจารย์ในคอสไหนบ้าง
-  Forum            Forum[] //เราเป็นผู้ตั้งกระทู้ในคอสไหนบ้าง
-  ForumComment     ForumComment[] //เราเป็นผู้ตอบกระทู้ในคอสไหนบ้าง
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  SendMessage      Message[]          @relation("senderMessage") //เราส่งข้อความให้ใครบ้าง
-  ReciveMessage    Message[]          @relation("reciveMessage") //เราได้รับข้อความจากใครบ้าง
-  ChatUser         ChatUser[] //เราเข้าห้องแชทไหนบ้าง
-  NotifyUser       NotifyUser[] //เราได้รับการแจ้งเตือนไหม
-}
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  email      String
+  fullname   String
+  generation String
+  degree     String
+  role       String
+  createdAt  DateTime @default(now())
 
-enum Role {
-  GUESS
-  INSTRUCTOR
-  USER
-}
-
-model CourseInstructor {
-  id        Int      @id @default(autoincrement())
-  courseId  Int
-  userId    Int
-  role      Role     @default(INSTRUCTOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
-  course    Course   @relation(fields: [courseId], references: [id])
-
-  @@map("course_instructor")
-}
-
-model CourseUser {
-  id        Int      @id @default(autoincrement())
-  course    Course   @relation(fields: [courseId], references: [id])
-  courseId  Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  role      Role     @default(GUESS)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("course_user")
+  owners           OwnerCourse[]
+  enrollments      Enrollment[]
+  assignments      Assignment[]
+  posts            Post[]
+  comments         Comments[]
+  notify           Notify[]
+  sentMessages     Message[]     @relation("Sender")
+  receivedMessages Message[]     @relation("Receiver")
+  chats            Chat[]        @relation("UserToChat")
 }
 
 model Course {
-  id               Int                @id @default(autoincrement())
-  courseId         Int                @unique
-  title            String             @unique
-  description      String
-  authorId         Int //เราสร้างคอสนี้โดยใคร
-  member           CourseUser[] //เรามีสมาชิกในคอสนี้ไหม
-  CourseInstructor CourseInstructor[] //เรามีอาจารย์ในคอสนี้ไหม
-  CourseContent    CourseContent[] //เรามีเนื้อหาในคอสนี้ไหม
-  Assignment       Assignment[] //เรามีการบ้านในคอสนี้ไหม
-  Forum            Forum[]
-  author           User               @relation(fields: [authorId], references: [id])
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id          Int           @id @default(autoincrement())
+  code        String
+  title       String
+  description String
+  owners      OwnerCourse[]
+  enrollments Enrollment[]
+  assignments Assignment[]
+  posts       Post[]
+  File        File[]
 }
 
-model CourseContent {
-  id        Int      @id @default(autoincrement())
-  courseId  Int
-  title     String
-  content   String
-  file      File[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  course    Course   @relation(fields: [courseId], references: [id])
+model OwnerCourse {
+  id       Int    @id @default(autoincrement())
+  courseId Int
+  userId   Int
+  course   Course @relation(fields: [courseId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
+}
 
-  @@map("course_content")
+model Enrollment {
+  id       Int    @id @default(autoincrement())
+  courseId Int
+  userId   Int
+  course   Course @relation(fields: [courseId], references: [id])
+  student  User   @relation(fields: [userId], references: [id])
 }
 
 model Assignment {
-  id        Int      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  creatorId   Int
+  title       String
+  description String
+  dueDate     DateTime
+  createdAt   DateTime @default(now())
+  creator     User     @relation(fields: [creatorId], references: [id])
+  course      Course   @relation(fields: [courseId], references: [id])
+  files       File[]
+}
+
+model Post {
+  id        Int        @id @default(autoincrement())
   courseId  Int
-  title     String
+  authorId  Int
   content   String
-  file      File[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  course    Course   @relation(fields: [courseId], references: [id])
+  createdAt DateTime   @default(now())
+  comments  Comments[]
+  author    User       @relation(fields: [authorId], references: [id])
+  course    Course     @relation(fields: [courseId], references: [id])
+  files     File[]
 }
 
-model Forum {
-  id           Int            @id @default(autoincrement())
-  courseId     Int
-  authorId     Int
-  title        String
-  content      String
-  createdAt    DateTime       @default(now())
-  ForumComment ForumComment[]
-  updatedAt    DateTime       @updatedAt
-  author       User           @relation(fields: [authorId], references: [id])
-  course       Course         @relation(fields: [courseId], references: [id])
-}
-
-model ForumComment {
+model Comments {
   id        Int      @id @default(autoincrement())
-  forumId   Int
+  postId    Int
   authorId  Int
   content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
-  forum     Forum    @relation(fields: [forumId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
 model File {
-  id              Int            @id @default(autoincrement())
-  type            FileType
-  filename        String
-  mimetype        String
-  size            Int
-  url             String
-  courseContentId Int?
-  CourseContent   CourseContent? @relation(fields: [courseContentId], references: [id])
-  Assignment      Assignment?    @relation(fields: [assignmentId], references: [id])
-  assignmentId    Int?
-}
-
-enum FileType {
-  IMAGE
-  DOCUMENT
-}
-
-model ChatUser {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  User      User     @relation(fields: [userId], references: [id])
-  chat      Chat     @relation(fields: [chatId], references: [id])
-  chatId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int         @id @default(autoincrement())
+  filename     String
+  path         String
+  createdAt    DateTime    @default(now())
+  courseId     Int?
+  postId       Int?
+  assignmentId Int?
+  course       Course?     @relation(fields: [courseId], references: [id])
+  post         Post?       @relation(fields: [postId], references: [id])
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
 }
 
 model Chat {
-  id        Int        @id @default(autoincrement())
-  ChatUser  ChatUser[]
-  Message   Message[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  userId    Int?
+  users     User[]    @relation("UserToChat")
+  messages  Message[]
 }
 
 model Message {
-  id           Int      @id @default(autoincrement())
-  userSender   Int
-  UserSender   User     @relation("senderMessage", fields: [userSender], references: [id])
-  userReceiver Int
-  UserReceiver User     @relation("reciveMessage", fields: [userReceiver], references: [id])
-  chatId       Int
-  message      String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  Chat         Chat     @relation(fields: [chatId], references: [id])
-}
-
-model NotifyUser {
-  id        Int          @id @default(autoincrement())
-  userId    Int
-  notifyId  Int
-  status    NotifyStatus
-  User      User         @relation(fields: [userId], references: [id])
-  notify    Notify       @relation(fields: [notifyId], references: [id])
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id         Int      @id @default(autoincrement())
+  content    String
+  senderId   Int
+  receiverId Int
+  chatId     Int
+  createdAt  DateTime @default(now())
+  sender     User     @relation("Sender", fields: [senderId], references: [id])
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  chat       Chat     @relation(fields: [chatId], references: [id])
 }
 
 enum NotifyStatus {
@@ -192,9 +134,10 @@ enum NotifyStatus {
 }
 
 model Notify {
-  id         Int          @id @default(autoincrement())
-  message    String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  NotifyUser NotifyUser[] //เราได้รับการแจ้งเตือนไหม
+  id        Int          @id @default(autoincrement())
+  message   String
+  status    NotifyStatus @default(UNREAD)
+  createdAt DateTime     @default(now())
+  userId    Int
+  User      User         @relation(fields: [userId], references: [id])
 }

@@ -10,6 +10,9 @@
     "db:table": "npx prisma studio",
     "db:migrate": "npx prisma migrate dev --name init"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -24,6 +27,7 @@
     "ldap-authentication": "^2.3.3",
     "nodemon": "^2.0.20",
     "prisma": "^4.10.1",
+    "socket.io": "^4.6.1",
     "yup": "^1.0.0"
   }
 }
