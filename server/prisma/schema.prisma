@@ -46,7 +46,7 @@ model Course {
 }
 
 model OwnerCourse {
-  id       Int    @id @default(autoincrement())
+  id       Int    @id @unique @default(autoincrement())
   courseId Int
   userId   Int
   course   Course @relation(fields: [courseId], references: [id])
