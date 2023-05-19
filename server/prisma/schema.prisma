@@ -34,7 +34,8 @@ model User {
 
 model Course {
   id          Int           @id @default(autoincrement())
-  code        String
+  code        String        @unique
+  term        String
   title       String
   description String
   owners      OwnerCourse[]
