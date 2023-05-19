@@ -1,10 +1,56 @@
 <template>
   <div class="card fadein animation-duration-200">
     <div class="flex justify-content-end mb-4">
-      <Button label="Create New" icon="pi pi-plus" size="small"></Button>
+      <Button v-show="isStudent" @click="visible = true" label="Create New" icon="pi pi-plus" size="small">
+      </Button>
+      <Dialog modal header="เพิ่มคอร์สเรียน" :visible="visible" @update:visible="handleClose" :style="{ width: '50vw' }">
+        <div class="grid mt-2">
+          <div class="col-3">
+            <label for="code" class="text-lg">รหัสวิชา</label>
+          </div>
+          <div class="col-9">
+            <InputText id="code" v-model="formData.code" class="w-full" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-3">
+            <label for="term" class="text-lg">ภาคเรียน/ปีการศึกษา</label>
+          </div>
+          <div class="col-9">
+            <InputText id="term" v-model="formData.term" class="w-full" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-3">
+            <label for="title" class="text-lg">ชื่อรายวิชา</label>
+          </div>
+          <div class="col-9">
+            <InputText id="title" v-model="formData.title" class="w-full" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-3">
+            <label for="description" class="text-lg">รายละเอียดวิชา</label>
+          </div>
+          <div class="col-9">
+            <InputTextarea id="description" rows="5" v-model="formData.description" class="w-full">
+            </InputTextarea>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-9 col-offset-3">
+            <Button @click="createCourse" label="สร้างคอร์ส" icon="pi pi-save" size="small">
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
     <div v-if="listCourses.length" class="grid">
-      <div class="col-4" v-for="item in listCourses" :key="item.id">
+      <div class="col-4" v-for="item in Course" :key="item.id">
         <div class="p-3 h-full">
           <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
             <img src="../public/img/courseImg.avif" alt="courseImg" />
@@ -17,7 +63,8 @@
               </li>
             </ul>
             <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
-            <Button label="Enroll" class="p-3 w-full mt-auto" @click="enroll(item.id)"></Button>
+            <Button label="เข้าร่วม" class="p-3 w-full mt-auto" @click="enroll(item.id)"></Button>
+            <ConfirmDialog></ConfirmDialog>
           </div>
         </div>
       </div>
@@ -40,19 +87,104 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      formData: {
+        code: '',
+        title: '',
+        term: '',
+        description: '',
+        owner: null
+      },
       listCourses: [],
-      listEstimate: []
+      listEstimate: [],
+      isStudent: true,
+      visible: false,
+      user: {
+        id: 6,
+        fullname: 'สมชาย ใจดี',
+        email: ''
+      }
     }
   },
   mounted() {
     this.getCourse()
+    this.getEnroll()
+    this.formData.owner = this.user.id
   },
+
+  computed: {
+    Course() {
+      return this.listCourses.filter(
+        (course) => this.listEstimate.find((enroll) => enroll.courseId === course.id) === undefined
+      )
+    }
+  },
+
   methods: {
+    handleClose(value) {
+      this.visible = value
+    },
+
+    resetForm() {
+      this.formData = {
+        code: '',
+        title: '',
+        term: '',
+        description: ''
+      }
+    },
+
+    enroll(id) {
+      console.log(id)
+      this.$confirm.require({
+        message: 'คุณต้องการที่จะเข้าร่วมคอร์สเรียนนี้ใช่หรือไม่?',
+        header: 'ยืนยัน',
+        acceptLabel: 'ยืนยัน',
+        rejectLabel: 'ยกเลิก',
+        accept: () => {
+          try {
+            const res = axios.post('http://localhost:8080/api/enrollment/createEnroll', {
+              courseId: id,
+              userId: this.user.id
+            })
+            this.$toast.add({
+              severity: 'info',
+              summary: 'Confirmed',
+              detail: 'Record deleted',
+              life: 3000
+            })
+
+            this.getEnroll()
+          } catch (error) {
+            console.log(error)
+          }
+        }
+      })
+    },
+
+    async createCourse() {
+      try {
+        const res = await axios.post('http://localhost:8080/api/course/createCourse', this.formData)
+        this.visible = false
+        this.resetForm()
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async getEnroll() {
+      try {
+        const res = await axios.get('http://localhost:8080/api/enrollment/getEnroll')
+        this.listEstimate = res.data
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     async getCourse() {
       try {
         const res = await axios.get('http://localhost:8080/api/course/getCourse')
         this.listCourses = res.data
-        console.log(res.data)
       } catch (error) {
         console.log(error)
       }
