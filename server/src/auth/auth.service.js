@@ -5,62 +5,41 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import createHttpError from "http-errors";
 import { authenticate } from 'ldap-authentication'
 
-export const ldapLogin = async (email, password) => {
-    let user = await authenticate({
-        ldapOpts: { url: 'ldap://161.246.38.141' },
-        userDn: 'it64070146@it.kmitl.ac.th',
-        userPassword: 'Best1539..',
-        userSearchBase: 'dc=it,dc=kmitl,dc=ac,dc=th',
-        usernameAttribute: 'samaccountname',
-        username: 'it64070146',
-        attributes: ['dn', 'sn', 'cn'],
-    })
-    return user
+export const ldapLogin = async (username, password) => {
+    // let user = await authenticate({
+    //     ldapOpts: { url: 'ldap://161.246.38.141' },
+    //     userDn: username + '@it.kmitl.ac.th',
+    //     userPassword: password,
+    //     userSearchBase: 'dc=it,dc=kmitl,dc=ac,dc=th',
+    //     usernameAttribute: 'samaccountname',
+    //     username: username,
+    //     attributes: ['dn', 'sn', 'cn'],
+    // })
+    let data = { username: username, password: password };
+    return data;
 }
 
-export const login = async (email, password) => {
-    // find username
-    const isEmail = await prisma.user.findUnique({
-        where: { email: email },
-    });
-    if (!isEmail) {
-        throw createHttpError.Unauthorized("this username not found");
-    }
-    // check password
-    const isPassword = await bcrypt.compare(password, isEmail.password);
-    if (!isPassword) {
-        throw createHttpError.Unauthorized("password is not match");
-    }
+// export const register = async (email, password, firstName, lastName) => {
+//     // find username
+//     const findEmail = await prisma.user.findUnique({
+//         where: { email: email },
+//     });
 
-    isEmail.password = undefined;
+//     if (findEmail) {
+//         throw createHttpError.Unauthorized("this username have alrady");
+//     }
+//     // check password
+//     const hash = await bcrypt.hash(password, 10)
 
-    // convert to jwt
-    const accessToken = signAccessToken(isEmail);
-    return { ...isEmail, accessToken };
-};
+//     const newUser = await prisma.user.create({
+//         data: {
+//             email: email,
+//             password: hash,
+//         }
+//     })
 
-
-export const register = async (email, password, firstName, lastName) => {
-    // find username
-    const findEmail = await prisma.user.findUnique({
-        where: { email: email },
-    });
-
-    if (findEmail) {
-        throw createHttpError.Unauthorized("this username have alrady");
-    }
-    // check password
-    const hash = await bcrypt.hash(password, 10)
-
-    const newUser = await prisma.user.create({
-        data: {
-            email: email,
-            password: hash,
-        }
-    })
-
-    newUser.password = undefined;
-    // convert to jwt
-    const accessToken = signAccessToken(newUser);
-    return { ...newUser, accessToken };
-};
+//     newUser.password = undefined;
+//     // convert to jwt
+//     const accessToken = signAccessToken(newUser);
+//     return { ...newUser, accessToken };
+// };

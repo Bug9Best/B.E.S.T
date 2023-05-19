@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 export const loginValidate = yup.object().shape({
-  email: yup.string().email().required(),
+  username: yup.string().required(),
   password: yup.string().required(),
 });
 
