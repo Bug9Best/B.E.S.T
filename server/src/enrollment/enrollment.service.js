@@ -1,6 +1,7 @@
 const prisma = new PrismaClient();
 import { PrismaClient, Prisma } from "@prisma/client";
 import * as mailService from "../mail/mail.js";
+import { io } from "../socket/index.js"
 
 export const getAll = async (userId) => {
     const allEnroll = await prisma.enrollment.findMany({
@@ -37,6 +38,8 @@ export const create = async (courseId, userId) => {
     });
 
     const sendMail = await mailService.onEnroller(user.email, user.fullname, course.title);
+
+    io.emit("enroll")
 
     return { newEnroll, sendMail };
 };

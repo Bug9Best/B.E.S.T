@@ -98,12 +98,11 @@ export default {
       listEstimate: [],
       isStudent: true,
       visible: false,
-      user: {
-        id: 6,
-        fullname: 'สมชาย ใจดี',
-        email: ''
-      }
+      user: null
     }
+  },
+  created() {
+    this.user = JSON.parse(localStorage.getItem('user'))
   },
   mounted() {
     this.getCourse()

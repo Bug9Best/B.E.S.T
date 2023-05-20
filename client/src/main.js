@@ -50,6 +50,7 @@ import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
 import { firebaseApp } from "./firebase";
 import { VueFire } from "vuefire";
+import io from 'socket.io-client'
 
 const app = createApp(App)
 
