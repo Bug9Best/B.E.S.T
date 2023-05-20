@@ -7,6 +7,7 @@ import course from "./course/course.controller.js";
 import post from "./post/post.controller.js";
 import comment from "./comment/comment.controller.js";
 import enrollment from "./enrollment/enrollment.controller.js";
+import user from "./user/user.controller.js";
 
 import testSocket from "./testSocket/index.js";
 import { connectSocket } from "./socket/index.js";
@@ -31,7 +32,8 @@ app.use("/api",
     router.use("/course", course),
     router.use("/enrollment", enrollment),
     router.use("/post", post),
-    router.use("/comment", comment)
+    router.use("/comment", comment),
+    router.use('/user', user)
 );
 
 app.listen(port, () => {
