@@ -21,15 +21,15 @@ model User {
   role       String
   createdAt  DateTime @default(now())
 
-  owners           OwnerCourse[]
-  enrollments      Enrollment[]
-  assignments      Assignment[]
-  posts            Post[]
-  comments         Comments[]
-  notify           Notify[]
-  sentMessages     Message[]     @relation("Sender")
-  receivedMessages Message[]     @relation("Receiver")
-  chats            Chat[]        @relation("UserToChat")
+  owners      OwnerCourse[]
+  enrollments Enrollment[]
+  assignments Assignment[]
+  posts       Post[]
+  comments    Comments[]
+  notify      Notify[]
+  Receiver    RoomChat[]    @relation("ChatUser2")
+  Sender      RoomChat[]    @relation("ChatUser1")
+  Message     Message[]
 }
 
 model Course {
@@ -109,26 +109,6 @@ model File {
   assignment   Assignment? @relation(fields: [assignmentId], references: [id])
 }
 
-model Chat {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  userId    Int?
-  users     User[]    @relation("UserToChat")
-  messages  Message[]
-}
-
-model Message {
-  id         Int      @id @default(autoincrement())
-  content    String
-  senderId   Int
-  receiverId Int
-  chatId     Int
-  createdAt  DateTime @default(now())
-  sender     User     @relation("Sender", fields: [senderId], references: [id])
-  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
-  chat       Chat     @relation(fields: [chatId], references: [id])
-}
-
 enum NotifyStatus {
   READ
   UNREAD
@@ -141,4 +121,27 @@ model Notify {
   createdAt DateTime     @default(now())
   userId    Int
   User      User         @relation(fields: [userId], references: [id])
+}
+
+//chat model
+
+model RoomChat {
+  id        Int       @id @default(autoincrement())
+  name      String
+  messages  Message[]
+  senderId  Int
+  sender    User      @relation("ChatUser1", fields: [senderId], references: [id])
+  receiveId Int
+  receive   User      @relation("ChatUser2", fields: [receiveId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  chatId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  chat      RoomChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
