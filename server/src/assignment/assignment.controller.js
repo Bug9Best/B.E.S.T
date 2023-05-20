@@ -39,7 +39,7 @@ router.post("/createAssignment", async (req, res) => {
             throw createHttpError.Unauthorized("data invalid");
         }
 
-        let assignment = await assignmentService.create(data.courseId, data.title, data.description);
+        let assignment = await assignmentService.create(data.courseId, data.creatorId, data.title, data.description, data.dueDate);
 
         res.json(assignment);
     } catch (e) {
