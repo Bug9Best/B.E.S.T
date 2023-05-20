@@ -19,13 +19,23 @@ export const getAll = async () => {
 
 export const show = async (id) => {
     const course = await prisma.course.findUnique({
-        where: { id: id },
-
-
+        where: { id: parseInt(id) },
+        include: {
+            owners: {
+                include: {
+                    user: true
+                }
+            },
+            enrollments: {
+                include: {
+                    student: true
+                }
+            }
+        }
     });
     if (!course) throw createHttpError.Unauthorized("This Course not found.");
 
-    return { course };
+    return course;
 };
 
 export const create = async (code, term, title, description, owner) => {

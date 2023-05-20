@@ -16,7 +16,7 @@ router.get("/getCourse", async (req, res) => {
 
 router.get("/getCourse/:id", async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.query.id;
         const course = await courseService.show(id);
 
         res.json(course);
