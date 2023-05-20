@@ -2,7 +2,6 @@ import express from "express";
 const router = express.Router();
 import createHttpError from "http-errors";
 import * as courseService from "./course.service.js";
-import * as ownerService from "../owner/owner.service.js";
 import { createCourseValidate } from "./course.validate.js";
 
 router.get("/getCourse", async (req, res) => {
