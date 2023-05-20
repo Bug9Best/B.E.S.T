@@ -64,10 +64,10 @@
             </ul>
             <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
             <Button label="เข้าร่วม" class="p-3 w-full mt-auto" @click="enroll(item.id)"></Button>
-            <ConfirmDialog></ConfirmDialog>
           </div>
         </div>
       </div>
+      <ConfirmDialog></ConfirmDialog>
     </div>
     <div v-else class="flex flex-column nodata align-items-center justify-content-center">
       <i class="pi pi-exclamation-circle text-300 text-7xl"></i>
@@ -134,15 +134,14 @@ export default {
     },
 
     enroll(id) {
-      console.log(id)
       this.$confirm.require({
         message: 'คุณต้องการที่จะเข้าร่วมคอร์สเรียนนี้ใช่หรือไม่?',
         header: 'ยืนยัน',
         acceptLabel: 'ยืนยัน',
         rejectLabel: 'ยกเลิก',
-        accept: () => {
+        accept: async () => {
           try {
-            const res = axios.post('http://localhost:8080/api/enrollment/createEnroll', {
+            const res = await axios.post('http://localhost:8080/api/enrollment/createEnroll', {
               courseId: id,
               userId: this.user.id
             })
