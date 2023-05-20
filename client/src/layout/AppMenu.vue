@@ -77,7 +77,6 @@ export default {
           }
         })
         this.model[0].items[4].items = this.myCourse
-        console.log(this.myCourse)
       } catch (error) {
         console.log(error)
       }

@@ -4,48 +4,49 @@ import createHttpError from "http-errors";
 
 export const getAll = async () => {
     try {
-        const allCourse = await prisma.course.findMany();
-        return { allCourse };
+        const allAssignment = await prisma.assignment.findMany();
+        return { allAssignment };
     } catch (error) {
         throw createHttpError.Unauthorized("this Course not found.");
     }
 }
 
 export const show = async (id) => {
-    const oneCourse = await prisma.course.findUnique({
+    const oneAssignment = await prisma.assignment.findUnique({
         where: { id: id },
     });
 
-    if (!oneCourse) {
+    if (!oneAssignment) {
         throw createHttpError.Unauthorized("this Course not found.");
     }
 
-    return { oneCourse };
 };
 
-export const create = async (courseId, title, dexcription) => {
-    const findCourseId = await prisma.course.findUnique({
+export const create = async (courseId, creatorId, title, description, dueDate) => {
+    const findAssignmentId = await prisma.assignment.findUnique({
         where: { courseId: courseId },
     });
 
-    if (findCourseId) {
+    if (findAssignmentId) {
         throw createHttpError.Unauthorized("this Course have alrady.");
     }
 
-    const newCourse = await prisma.course.create({
+    const newAssignment = await prisma.assignment.create({
         data: {
             courseId: courseId,
+            creatorId: creatorId,
             title: title,
-            description: dexcription,
+            description: description,
+            dueDate: dueDate,
         }
     })
 
-    return { newCourse };
+    return newAssignment;
 };
 
 export const update = async (courseId, title, dexcription) => {
 
-    const updateCourse = await prisma.course.update({
+    const updateAssignment = await prisma.assignment.update({
         where: { courseId: courseId },
         data: {
 
@@ -54,13 +55,13 @@ export const update = async (courseId, title, dexcription) => {
         }
     })
 
-    return { updateCourse };
+    return updateAssignment;
 }
 
 export const remove = async (courseId) => {
-    const removeCourse = await prisma.course.delete({
+    const removeAssignment = await prisma.assignment.delete({
         where: { courseId: courseId },
     });
 
-    return { removeCourse };
+    return removeAssignment;
 }

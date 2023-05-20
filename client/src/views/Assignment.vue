@@ -1,5 +1,8 @@
 <script>
 import axios from 'axios'
+import { ref as storageRef, getDownloadURL, listAll } from 'firebase/storage'
+import { useFirebaseStorage } from 'vuefire'
+const storage = useFirebaseStorage()
 export default {
   data() {
     return {
@@ -14,22 +17,45 @@ export default {
     this.getAssignment()
   },
   methods: {
-    async getAssignment() {
-      try {
-        const res = await axios.get(`http://localhost:8080/api/user/assignment/${this.userId}`)
-        const groupedData = res.data.reduce((result, item) => {
+    async groupByDate(data) {
+      return Object.values(
+        data.reduce((result, item) => {
           const { createdAt } = item
-
           if (!result[createdAt]) {
-            result[createdAt] = [] // Create an array for the grouping key if it doesn't exist
+            result[createdAt] = { createdAt, items: [] }
           }
 
-          result[createdAt].push(item) // Push the item to the corresponding group
+          result[createdAt].items.push(item)
 
           return result
         }, {})
-        this.asssignment = groupedData
-        console.table(groupedData)
+      )
+    },
+    async getAssignment() {
+      try {
+        const res = await axios.get(`http://localhost:8080/api/user/assignment/${this.userId}`)
+        const data = res.data
+
+        await Promise.all(
+          data.map(async (item) => {
+            const starsRef = storageRef(storage, 'assignments/' + item.id)
+            const search = await listAll(starsRef)
+            item.file = []
+
+            await Promise.all(
+              search.items.map(async (file) => {
+                const download = await getDownloadURL(file)
+                item.file.push({ url: download.toString(), name: file.name })
+              })
+            )
+          })
+        )
+
+        const group = await this.groupByDate(data)
+
+        console.log(group[0].items[0])
+
+        this.asssignment = group
       } catch (error) {
         console.log(error)
       }
@@ -46,10 +72,10 @@ export default {
     </div>
     <div class="w-full flex flex-column">
       <div class="" v-for="(item, index) in asssignment" :key="index">
-        <div>{{ new Date(index).toLocaleDateString('th') }}</div>
+        <div>{{ new Date(item.createdAt).toLocaleDateString('th') }}</div>
         <div
           class="mt-2 border border border-round shadow-1 p-2 flex flex-column hover:shadow-2"
-          v-for="(item, index) in item"
+          v-for="(item, index) in item.items"
           :key="index"
         >
           <div class="flex justify-content-between px-3 py-1">
@@ -57,13 +83,17 @@ export default {
             <div class="text-sm">
               ครบกำหนด
               {{ new Date(item.dueDate).toLocaleDateString() }}
-              {{ new Date(item.dueDate).toTimeString().substring(0, 8) }}
+              {{ new Date(item.dueDate).toLocaleTimeString().slice(0, 4) }}
             </div>
           </div>
           <div class="px-3 py-1">{{ item.description }}</div>
           <hr />
-          <Button label="หฟกฟหกฟหก" class="p-button-text p-button-secondary"></Button>
-          <div class=""></div>
+          <div class="flex flex-column" v-if="item.file">
+            <a v-for="(file, index) in item.file" :key="index" :href="file.url">
+              {{ file.name }}
+            </a>
+          </div>
+          <!-- <Button label="หฟกฟหกฟหก" class="p-button-text p-button-secondary"></Button> -->
         </div>
         <hr />
       </div>
