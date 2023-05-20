@@ -79,6 +79,7 @@ export default {
                         icon: 'pi pi-sign-out',
                         command: () => {
                             localStorage.removeItem('token');
+                            localStorage.removeItem('user');
                             this.$router.push('/');
                         }
                     }]
