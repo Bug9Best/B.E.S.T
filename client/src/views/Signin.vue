@@ -1,18 +1,57 @@
 <script>
 import axios from 'axios'
+import { required } from '@vuelidate/validators';
+import { useVuelidate } from '@vuelidate/core';
 export default {
+  setup: () => ({ v$: useVuelidate() }),
   data() {
     return {
-      loginData: {
-        email: '',
-        password: ''
-      }
+      username: '',
+      password: '',
+      submitted: false,
+      showMessage: false,
     }
   },
+  validations() {
+    return {
+      username: { required },
+      password: { required },
+    }
+  },
+  
   methods: {
+    handleSubmit(isFormValid) {
+      this.submitted = true;
+      if (!isFormValid) {
+          return;
+      }
+      this.toggleDialog();
+      this.login();
+    },
+
+    toggleDialog() {
+      this.showMessage = !this.showMessage;
+
+      if (!this.showMessage) {
+          this.resetForm();
+      }
+    },
+
+    resetForm() {
+      this.username = '';
+      this.password = '';
+    },
+
     async login() {
       try {
-        const res = await axios.post('http://localhost:8080/api/auth/login', { ...this.loginData })
+        const res = await axios.post('http://localhost:8080/api/auth/login', { 
+          username: this.username, 
+          password: this.password 
+        })
+
+        if (res) {
+          console.log(res.data)
+        }
       } catch (err) {
         console.log(err.message)
       }
@@ -33,21 +72,24 @@ export default {
             range of courses for students to choose from.
           </p>
 
-          <div>
-            <label for="email1" class="block text-900 font-medium mb-2">Email</label>
-            <InputText type="text" placeholder="Email address" class="w-full mb-3" v-model="loginData.email" />
+          <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid mt-4">
+            <label for="email1" class="block text-900 font-medium mb-2">Username</label>
+            <InputText type="text" v-model="v$.username.$model"
+              placeholder="Username" :class="{ 'p-invalid': v$.username.$invalid && submitted }"/>
+            <small v-if="(v$.username.$invalid && submitted) || v$.username.$pending.$response"
+              class="p-error px-1">{{v$.username.required.$message.replace('Value', 'Username') }}
+            </small>
 
-            <label for="password1" class="block text-900 font-medium mb-2">Password</label>
-            <InputText type="password" placeholder="Password" class="w-full mb-3" v-model="loginData.password" />
+            <label for="password" class="block text-900 font-medium mt-2 mb-2">Password</label>
+            <InputText type="password" v-model="v$.password.$model"
+              placeholder="Password" :class="{ 'p-invalid': v$.password.$invalid && submitted }"/>
+            <small v-if="(v$.password.$invalid && submitted) || v$.password.$pending.$response"
+              class="p-error px-1">{{v$.password.required.$message.replace('Value', 'Password') }}
+            </small>
+         
 
-            <div class="flex align-items-center justify-content-end mb-5">
-              <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-primary">
-                Forgot password?
-              </a>
-            </div>
-
-            <Button @click="login()" label="Sign In" class="w-full"></Button>
-          </div>
+            <Button type="submit"  label="Sign In" class="w-full mt-5"></Button>
+          </form>
         </section>
       </div>
       <div class="hidden lg:block lg:col-6 overflow-hidden">

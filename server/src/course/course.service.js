@@ -3,22 +3,52 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import createHttpError from "http-errors";
 
 export const getAll = async () => {
-    const allCourse = await prisma.course.findMany();
+    const allCourse = await prisma.course.findMany({
+        include: {
+            owners: {
+                include: {
+                    user: true
+                }
+            }
+        },
+    });
     if (!allCourse) throw createHttpError.Unauthorized("This Course not found.");
 
-    return { allCourse };
+    return allCourse;
 }
 
 export const show = async (id) => {
     const course = await prisma.course.findUnique({
-        where: { id: id },
+        where: { id: parseInt(id) },
+        include: {
+            owners: {
+                include: {
+                    user: true
+                }
+            },
+            enrollments: {
+                include: {
+                    student: true
+                }
+            },
+            posts: {
+                include: {
+                    author: true,
+                    comments: {
+                        include: {
+                            author: true
+                        }
+                    }
+                }
+            }
+        }
     });
     if (!course) throw createHttpError.Unauthorized("This Course not found.");
 
-    return { course };
+    return course;
 };
 
-export const create = async (code, title, description) => {
+export const create = async (code, term, title, description, owner) => {
     const findCourseId = await prisma.course.findUnique({
         where: { code: code },
     });
@@ -28,12 +58,20 @@ export const create = async (code, title, description) => {
     const newCourse = await prisma.course.create({
         data: {
             code: code,
+            term: term,
             title: title,
             description: description,
         }
     })
 
-    return { newCourse };
+    const newOwner = await prisma.ownerCourse.create({
+        data: {
+            userId: owner,
+            courseId: newCourse.id,
+        }
+    })
+
+    return { newCourse, newOwner };
 };
 
 export const update = async (id, code, title, description) => {

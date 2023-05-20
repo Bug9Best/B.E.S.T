@@ -1,37 +1,57 @@
 <script setup>
-import { ref, watch } from 'vue'
+import axios from 'axios'
+import { ref, watch, onMounted } from 'vue'
 import AppMenuItem from './AppMenuItem.vue';
+
+
+let user = {
+    id: 6,
+};
+
+// const listEnroll = onMounted(async () => {
+//     try {
+//         const res = await axios.get('http://localhost:8080/api/enrollment/getEnroll', {
+//             params: {
+//                 id: user.id
+//             }
+//         })
+//         localStorage.setItem('myCourse', JSON.stringify(res.data));
+//     } catch (error) {
+//         console.log(error)
+//     }
+// });
 
 let myCourse = JSON.parse(localStorage.getItem('myCourse')) || [];
 myCourse = myCourse.map((course) => {
     return {
-        label: course.title,
+        label: course.course.title,
         icon: 'pi pi-fw pi-book',
-        to: '/course_detail/' + course.id,
+        to: '/course_detail/' + course.courseId,
     };
 });
+
 watch(() => JSON.parse(localStorage.getItem('myCourse')), (newVal) => {
     myCourse = newVal.map((course) => {
         return {
             label: course.title,
             icon: 'pi pi-fw pi-book',
-            to: '/course_detail/' + course.id,
+            to: '/course_detail/' + course.courseId,
         };
     });
 });
 
 const model = ref([
     {
-        label: 'Pages',
+        label: 'หน้า',
         items: [
-            { label: 'Course', icon: 'pi pi-fw pi-book', to: '/course' },
-            { label: 'Calendar', icon: 'pi pi-fw pi-calendar', to: '/calendar', },
-            { label: 'Assignment', icon: 'pi pi-fw pi-file', to: '/assignment' },
-            { label: 'Chat', icon: 'pi pi-fw pi-comments', to: '/chat' },
+            { label: 'คอร์สเรียน', icon: 'pi pi-fw pi-book', to: '/course' },
+            { label: 'ปฏิทิน', icon: 'pi pi-fw pi-calendar', to: '/calendar', },
+            { label: 'งานที่ได้รับมอบหมาย', icon: 'pi pi-fw pi-file', to: '/assignment' },
+            { label: 'แชท', icon: 'pi pi-fw pi-comments', to: '/chat' },
             // { label: 'Setting', icon: 'pi pi-fw pi-cog', to: '/setting' },
             // { label: 'User Manage', icon: 'pi pi-fw pi-user-edit', to: '/manage' },
             {
-                label: 'My Course', icon: 'pi pi-fw pi-book', to: '/course_detail', items: myCourse
+                label: 'คอร์สของฉัน', icon: 'pi pi-fw pi-book', to: '/course_detail', items: myCourse
             },
         ]
     },
@@ -40,8 +60,8 @@ const model = ref([
 const assistant = ref([
     {
         items: [
-            { label: 'About This Program', icon: 'pi pi-fw pi-verified', to: '/about' },
-            { label: 'Devloper Team', icon: 'pi pi-fw pi-users', to: '/team', },
+            { label: 'เกี่ยวกับโปรแกรมนี้', icon: 'pi pi-fw pi-verified', to: '/about' },
+            { label: 'ทีมพัฒนา', icon: 'pi pi-fw pi-users', to: '/team', },
         ]
     },
 ]);
@@ -63,5 +83,4 @@ const assistant = ref([
     </ul>
 </template>
 
-<style>
-</style>
+<style></style>

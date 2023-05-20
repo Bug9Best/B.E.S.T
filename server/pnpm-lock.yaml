@@ -9,6 +9,7 @@ specifiers:
   http-errors: ^2.0.0
   jsonwebtoken: ^9.0.0
   ldap-authentication: ^2.3.3
+  nodemailer: ^6.9.2
   nodemon: ^2.0.20
   prisma: ^4.10.1
   socket.io: ^4.6.1
@@ -23,6 +24,7 @@ dependencies:
   http-errors: 2.0.0
   jsonwebtoken: 9.0.0
   ldap-authentication: 2.3.3
+  nodemailer: 6.9.2
   nodemon: 2.0.22
   prisma: 4.11.0
   socket.io: 4.6.1
@@ -818,6 +820,11 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: false
+
+  /nodemailer/6.9.2:
+    resolution: {integrity: sha512-4+TYaa/e1nIxQfyw/WzNPYTEZ5OvHIDEnmjs4LPmIfccPQN+2CYKmGHjWixn/chzD3bmUTu5FMfpltizMxqzdg==}
+    engines: {node: '>=6.0.0'}
     dev: false
 
   /nodemon/2.0.22:

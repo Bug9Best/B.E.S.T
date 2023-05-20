@@ -34,7 +34,8 @@ model User {
 
 model Course {
   id          Int           @id @default(autoincrement())
-  code        String
+  code        String        @unique
+  term        String
   title       String
   description String
   owners      OwnerCourse[]
@@ -45,7 +46,7 @@ model Course {
 }
 
 model OwnerCourse {
-  id       Int    @id @default(autoincrement())
+  id       Int    @id @unique @default(autoincrement())
   courseId Int
   userId   Int
   course   Course @relation(fields: [courseId], references: [id])
@@ -53,7 +54,7 @@ model OwnerCourse {
 }
 
 model Enrollment {
-  id       Int    @id @default(autoincrement())
+  id       Int    @id @unique @default(autoincrement())
   courseId Int
   userId   Int
   course   Course @relation(fields: [courseId], references: [id])

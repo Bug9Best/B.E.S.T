@@ -4,7 +4,7 @@ import router from './router'
 
 // Import PrimeVue, PrimeIcons and PrimeFlex
 import PrimeVue from 'primevue/config';
-import 'primevue/resources/themes/lara-light-blue/theme.css';
+import 'primevue/resources/themes/lara-light-teal/theme.css';
 // import 'primevue/resources/themes/vela-blue/theme.css';
 // import 'primevue/resources/themes/mira/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -22,6 +22,7 @@ import InputTextarea from 'primevue/textarea';
 import Password from 'primevue/password';
 import Dropdown from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
+import Editor from 'primevue/editor';
 
 import Chip from 'primevue/chip';
 import Card from 'primevue/card';
@@ -40,7 +41,6 @@ import TabMenu from 'primevue/tabmenu';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import ScrollPanel from 'primevue/scrollpanel';
-
 import Steps from 'primevue/steps';
 
 import FileUpload from 'primevue/fileupload';
@@ -48,11 +48,17 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
+import { firebaseApp } from "./firebase";
+import { VueFire } from "vuefire";
 
 const app = createApp(App)
 
+app.use(VueFire, {
+    firebaseApp,
+});
+
 app.use(router)
-app.use(PrimeVue, {ripple: true});
+app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(ConfirmationService);
 app.mount('#app')
@@ -67,6 +73,7 @@ app.component('InputTextarea', InputTextarea);
 app.component('Password', Password);
 app.component('Dropdown', Dropdown);
 app.component('RadioButton', RadioButton);
+app.component('Editor', Editor);
 app.component('Chip', Chip);
 app.component('Card', Card);
 app.component('Dialog', Dialog);
