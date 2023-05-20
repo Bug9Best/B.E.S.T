@@ -88,8 +88,8 @@
                             {{ new Date(item.createdAt).toTimeString().substring(0, 8) }}</p>
                         <div class="flex justify-content-between align-items-start">
                             <p class="font-bold text-lg">{{ item.content }}</p>
-                            <Button icon="pi pi-comment" class="p-button-text p-button-lg"
-                                @click="changeComment(item.id)"></Button>
+                            <Button icon="pi pi-comment" class="p-button-text p-button-lg" @click="changeComment(item.id)">
+                            </Button>
                         </div>
                         <div class="comment" v-for="comments in item.comments">
                             <hr>
