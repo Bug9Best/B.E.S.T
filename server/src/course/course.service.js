@@ -30,6 +30,16 @@ export const show = async (id) => {
                 include: {
                     student: true
                 }
+            },
+            posts: {
+                include: {
+                    author: true,
+                    comments: {
+                        include: {
+                            author: true
+                        }
+                    }
+                }
             }
         }
     });

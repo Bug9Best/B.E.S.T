@@ -21,6 +21,11 @@ const router = createRouter({
       component: () => import('../views/Profile.vue')
     },
     {
+      path: "/testsocket",
+      name: "testsocket",
+      component: () => import("../views/TestSocket.vue"),
+    },
+    {
       path: '/',
       name: 'home',
       component: AppLayout,

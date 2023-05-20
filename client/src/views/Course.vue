@@ -173,8 +173,14 @@ export default {
 
     async getEnroll() {
       try {
-        const res = await axios.get('http://localhost:8080/api/enrollment/getEnroll')
+        const res = await axios.get('http://localhost:8080/api/enrollment/getEnroll',
+          {
+            params: {
+              id: this.user.id
+            }
+          })
         this.listEstimate = res.data
+        localStorage.setItem('myCourse', JSON.stringify(this.listEstimate))
       } catch (error) {
         console.log(error)
       }

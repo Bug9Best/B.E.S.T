@@ -1,13 +1,13 @@
 <template>
     <div class="card layouts fadein animation-duration-200">
-        <h5>asdas</h5>
+        <h5>{{ Course.title }}</h5>
         <TabView>
             <TabPanel>
                 <template #header>
                     <i class="pi pi-book mr-2"></i>
                     <span>Lectures</span>
                 </template>
-                <div class="card  shadow-1 p-3">
+                <div class="card shadow-1 p-3">
                     <p class="font-bold">Topic 1</p>
                 </div>
                 <div class="flotbutton">
@@ -21,7 +21,7 @@
                     <i class="pi pi-file mr-2"></i>
                     <span>Assignments</span>
                 </template>
-                <div class="card  shadow-1 p-3">
+                <div class="card shadow-1 p-3">
                     <p class="font-bold">Assignment 1</p>
                 </div>
                 <div class="flotbutton">
@@ -34,11 +34,50 @@
                     <i class="pi pi-clone mr-2"></i>
                     <span>Forum</span>
                 </template>
-                <div class="card  shadow-1 p-3">
-                    <p class="font-bold">Forum 1</p>
+                <ScrollPanel style="width: 100%; height: 480px">
+                    <div class="card p-3 mb-2" v-for="item in listPost">
+                        <p class="text-sm">
+                            {{ item.author.fullname }} :
+                            {{ new Date(item.createdAt).toLocaleDateString() }}
+                            {{ new Date(item.createdAt).toTimeString().substring(0, 8) }}</p>
+                        <div class="flex justify-content-between align-items-start">
+                            <p class="font-bold text-lg">{{ item.content }}</p>
+                            <Button icon="pi pi-comment" class="p-button-text p-button-lg"
+                                @click="changeComment(item.id)"></Button>
+
+                        </div>
+                        <div class="comment" v-for="comments in item.comments">
+                            <hr>
+                            <div class="text-sm">
+                                {{ comments.author.fullname }} :
+                                {{ new Date(comments.createdAt).toLocaleDateString() }}
+                                {{ new Date(comments.createdAt).toTimeString().substring(0, 8) }}</div>
+                            <div class="mt-2 font-bold">
+                                {{ comments.content }}
+                            </div>
+                        </div>
+                    </div>
+                </ScrollPanel>
+                <div v-if="isPost">
+                    <hr>
+                    <div class="flex w-full">
+                        <InputText class="mr-2  w-full" v-model="centent" />
+                        <Button label="โพสต์" icon="pi pi-send" @click="createPost()" class="p-buuton-text"
+                            style="width: 100px;">
+                        </Button>
+                    </div>
                 </div>
-                <div class="flotbutton">
-                    <Button label="Create New" icon="pi pi-pencil" @click="addForum()" />
+                <div v-else>
+                    <hr>
+                    <div class="flex w-full">
+                        <InputText class="mr-2  w-full" v-model="centent" />
+                        <Button label="แสดงความคิดเห็น" icon="pi pi-comment" @click="createComment()"
+                            class="p-buuton-text mr-2" style="width: 250px;">
+                        </Button>
+                        <Button label="ยกเลิก" icon="pi pi-comment" @click="changePost()"
+                            class="p-buuton-text p-button-danger" style="width: 150px;">
+                        </Button>
+                    </div>
                 </div>
             </TabPanel>
 
@@ -94,8 +133,8 @@
         </TabView>
     </div>
 </template>
-
 <script>
+
 import axios from 'axios'
 import Course from "../public/json/course.json";
 export default {
@@ -109,8 +148,16 @@ export default {
     data() {
         return {
             Course: {},
-            member: 0
+            listPost: {},
+            centent: "",
+            member: 0,
+            isPost: true,
+            postId: null,
+            user: {
+                id: 6,
+            }
         };
+
     },
     mounted() {
         this.getCourse();
@@ -122,15 +169,56 @@ export default {
         }
     },
     methods: {
+        resetForm() {
+            this.centent = '';
+            this.postId = null;
+        },
+
+        changePost() {
+            this.isPost = true;
+            this.resetForm();
+        },
+
+        changeComment(id) {
+            this.isPost = false;
+            this.postId = id;
+            this.content = "";
+        },
+
         addBlog() {
             console.log("add blog");
         },
         addAssignment() {
             console.log("add assignment");
         },
-        addForum() {
-            console.log("add forum");
+        async createPost() {
+            try {
+                const res = await axios.post('http://localhost:8080/api/post/createPost', {
+                    courseId: this.id,
+                    authorId: this.user.id,
+                    content: this.centent,
+                })
+                this.resetForm();
+                this.getCourse();
+            } catch (error) {
+                console.log(error)
+            }
         },
+
+        async createComment() {
+            try {
+                const res = await axios.post('http://localhost:8080/api/comment/createComment', {
+                    postId: this.postId,
+                    authorId: this.user.id,
+                    content: this.centent,
+                })
+                this.resetForm();
+                this.getCourse();
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
         async getCourse() {
             try {
                 const res = await axios.get('http://localhost:8080/api/course/getCourse/:id', {
@@ -139,6 +227,7 @@ export default {
                     }
                 })
                 this.Course = Object(res.data)
+                this.listPost = Object(res.data.posts)
                 this.member = this.Course.enrollments.length
                 console.log(res.data)
             } catch (error) {
@@ -158,5 +247,14 @@ export default {
     position: absolute;
     top: -5.5rem;
     right: 0;
+}
+
+.menu-post {
+    z-index: 10;
+    background-color: white;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
 }
 </style>
