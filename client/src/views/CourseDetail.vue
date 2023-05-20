@@ -20,9 +20,17 @@
                     <i class="pi pi-file mr-2"></i>
                     <span>Assignments</span>
                 </template>
-                <div class="card shadow-1 p-3">
-                    <p class="font-bold">Assignment 1</p>
-                </div>
+                <ScrollPanel style="width: 100%; height: 550px">
+                    <div class="card shadow-1 py-3" v-for="item in listAssignment">
+                        <div class="font-bold">{{ item.title }}</div>
+                        <div class="text-sm">{{ item.description }}</div>
+                        <div class="text-sm">
+                            ครบกำหนด :
+                            {{ new Date(item.createdAt).toLocaleDateString() }}
+                            {{ new Date(item.createdAt).toTimeString().substring(0, 8) }}
+                        </div>
+                    </div>
+                </ScrollPanel>
                 <div class="flotbutton">
                     <Button class="p-button-text" label="สร้างการบ้าน" icon="pi pi-plus" @click="visible = true" />
                     <Dialog modal header="เพิ่มงานมอบหมาย" :visible="visible" @update:visible="handleClose"
@@ -48,7 +56,7 @@
 
                         <div class="grid">
                             <div class="col-3">
-                                <label for="description" class="text-lg">วันที่ครบกำหนด</label>
+                                <label for="duedate" class="text-lg">วันที่ครบกำหนด</label>
                             </div>
                             <div class="col-9">
                                 <Calendar v-model="formData.dueDate" class="w-full" />
@@ -57,7 +65,7 @@
 
                         <div class="grid">
                             <div class="col-3">
-                                <label for="description" class="text-lg">ไฟล์</label>
+                                <label for="file" class="text-lg">ไฟล์</label>
                             </div>
                             <div class="col-9">
                                 <FileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*"
@@ -200,6 +208,7 @@ export default {
             user: {},
             course: {},
             listPost: {},
+            listAssignment: {},
             postId: null,
             centent: "",
             member: 0,
@@ -263,13 +272,14 @@ export default {
 
         async createAssignment() {
             try {
-                const res = await axios.post('http://localhost:8080/api/post/createPost', {
+                const res = await axios.post('http://localhost:8080/api/assignment/createAssignment', {
                     courseId: this.id,
                     creatorId: this.user.id,
                     title: this.formData.title,
                     description: this.formData.description,
                     dueDate: this.formData.dueDate,
                 })
+                this.visible = false
                 this.resetForm();
                 this.getCourse();
             } catch (error) {
@@ -314,6 +324,7 @@ export default {
                 })
                 this.course = Object(res.data)
                 this.listPost = Object(res.data.posts)
+                this.listAssignment = Object(res.data.assignments)
                 this.member = this.course.enrollments.length
                 // console.log(res.data)
             } catch (error) {
@@ -331,7 +342,7 @@ export default {
 
 .flotbutton {
     position: absolute;
-    top: -5.5rem;
+    top: -5rem;
     right: 0;
 }
 

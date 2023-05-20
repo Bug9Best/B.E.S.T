@@ -40,6 +40,11 @@ export const show = async (id) => {
                         }
                     }
                 }
+            },
+            assignments: {
+                include: {
+                    creator: true,
+                }
             }
         }
     });

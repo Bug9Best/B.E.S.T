@@ -1,5 +1,6 @@
 const prisma = new PrismaClient();
 import { PrismaClient, Prisma } from "@prisma/client";
+import * as mailService from "../mail/mail.js";
 import createHttpError from "http-errors";
 
 export const getAll = async () => {
@@ -23,25 +24,37 @@ export const show = async (id) => {
 };
 
 export const create = async (courseId, creatorId, title, description, dueDate) => {
-    const findAssignmentId = await prisma.assignment.findUnique({
-        where: { courseId: courseId },
-    });
-
-    if (findAssignmentId) {
-        throw createHttpError.Unauthorized("this Course have alrady.");
-    }
-
     const newAssignment = await prisma.assignment.create({
         data: {
-            courseId: courseId,
-            creatorId: creatorId,
+            courseId: parseInt(courseId),
+            creatorId: parseInt(creatorId),
             title: title,
             description: description,
             dueDate: dueDate,
         }
     })
 
-    return newAssignment;
+    const course = await prisma.course.findUnique({
+        where: { id: parseInt(courseId) },
+        select: {
+            title: true,
+        }
+    });
+
+    const enroll = await prisma.enrollment.findMany({
+        where: { courseId: parseInt(courseId) },
+        include: {
+            student: true
+        }
+    });
+
+    enroll.forEach(async (enroll) => {
+        const sendMail = await mailService.onAssign(enroll.student.email, enroll.student.fullname, course.title);
+    });
+
+    // io.emit("enroll")
+
+    return { newAssignment, enroll };
 };
 
 export const update = async (courseId, title, dexcription) => {

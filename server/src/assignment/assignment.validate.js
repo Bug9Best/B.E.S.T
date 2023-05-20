@@ -5,5 +5,5 @@ export const createAssignmentValidate = yup.object().shape({
   creatorId: yup.string().required(),
   title: yup.string().required(),
   description: yup.string().required(),
-  dueDate: yup.date().required(),
+  dueDate: yup.string().required(),
 });
