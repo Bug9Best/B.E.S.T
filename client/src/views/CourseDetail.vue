@@ -5,25 +5,56 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-book mr-2"></i>
-          <span>Lectures</span>
+          <span>เอกสารประกอบการเรียน</span>
         </template>
-        <div class="card shadow-1 p-3">
-          <p class="font-bold">Topic 1</p>
-        </div>
+        <ScrollPanel style="width: 100%; height: 550px">
+          <div class="card shadow-1 py-3" v-for="item in listLecture">
+            <div class="font-bold">{{ item.content }}</div>
+            <div v-if="item.file.length">
+              <div v-for="file in item.file" class="flex flex-column mb-1">
+                <hr>
+                <div class="text-sm">ไฟล์แนบ : </div>
+                <a class="file-container mt-2" :href="file.url"> {{ file.name }} </a>
+              </div>
+            </div>
+          </div>
+        </ScrollPanel>
         <div class="flotbutton">
-          <Button
-            class="p-button-text"
-            label="เพิ่มเอกสาร"
-            icon="pi pi-plus"
-            @click="addAssignment()"
-          />
+          <Button class="p-button-text" label="เพิ่มเอกสาร" icon="pi pi-plus" @click="visibleLecture = true" />
+          <Dialog modal header="เพิ่มเอกสารประกอบการเรียนการสอน" :visible="visibleLecture" @update:visible="handleClose"
+            :style="{ width: '50vw' }">
+            <div class="grid">
+              <div class="col-3">
+                <label for="content" class="text-lg">รายละเอียด</label>
+              </div>
+              <div class="col-9">
+                <InputTextarea rows="5" id="content" v-model="formLecture.content" class="w-full"></InputTextarea>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="col-3">
+                <label for="file" class="text-lg">ไฟล์</label>
+              </div>
+              <div class="col-9">
+                <input type="file" class="custom-file-input" @change="onUpload" />
+              </div>
+            </div>
+
+            <div class="grid mt-2">
+              <div class="col-9 col-offset-3">
+                <Button @click="createLecture" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
+                </Button>
+              </div>
+            </div>
+          </Dialog>
         </div>
       </TabPanel>
 
       <TabPanel>
         <template #header>
           <i class="pi pi-file mr-2"></i>
-          <span>Assignments</span>
+          <span>งานที่มอบหมาย</span>
         </template>
         <ScrollPanel style="width: 100%; height: 550px">
           <div class="card shadow-1 py-3" v-for="item in listAssignment">
@@ -34,22 +65,19 @@
               {{ new Date(item.createdAt).toLocaleDateString() }}
               {{ new Date(item.createdAt).toTimeString().substring(0, 8) }}
             </div>
+            <div v-if="item.file.length">
+              <div v-for="file in item.file" class="flex flex-column mb-1">
+                <hr>
+                <div class="text-sm">ไฟล์แนบ : </div>
+                <a class="file-container mt-2" :href="file.url"> {{ file.name }} </a>
+              </div>
+            </div>
           </div>
         </ScrollPanel>
         <div class="flotbutton">
-          <Button
-            class="p-button-text"
-            label="สร้างการบ้าน"
-            icon="pi pi-plus"
-            @click="visible = true"
-          />
-          <Dialog
-            modal
-            header="เพิ่มงานมอบหมาย"
-            :visible="visible"
-            @update:visible="handleClose"
-            :style="{ width: '50vw' }"
-          >
+          <Button class="p-button-text" label="สร้างการบ้าน" icon="pi pi-plus" @click="visible = true" />
+          <Dialog modal header="เพิ่มงานมอบหมาย" :visible="visible" @update:visible="handleClose"
+            :style="{ width: '50vw' }">
             <div class="grid">
               <div class="col-3">
                 <label for="title" class="text-lg">ชื่องานที่มอบหมาย</label>
@@ -64,12 +92,7 @@
                 <label for="description" class="text-lg">รายละเอียดงาน</label>
               </div>
               <div class="col-9">
-                <InputTextarea
-                  id="description"
-                  rows="5"
-                  v-model="formData.description"
-                  class="w-full"
-                >
+                <InputTextarea id="description" rows="5" v-model="formData.description" class="w-full">
                 </InputTextarea>
               </div>
             </div>
@@ -88,20 +111,13 @@
                 <label for="file" class="text-lg">ไฟล์</label>
               </div>
               <div class="col-9">
-                <!-- <FileUpload mode="basic" name="demo[]"  accept="image/*"
-                                    :maxFileSize="1000000" @upload="onUpload($event)" class="p-button-sm p-button-outlined" />-->
                 <input type="file" class="custom-file-input" @change="onUpload" />
               </div>
             </div>
 
             <div class="grid mt-2">
               <div class="col-9 col-offset-3">
-                <Button
-                  @click="createAssignment"
-                  label="สร้างงานมอบหมาย"
-                  icon="pi pi-save"
-                  size="small"
-                >
+                <Button @click="createAssignment" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
                 </Button>
               </div>
             </div>
@@ -112,7 +128,7 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-clone mr-2"></i>
-          <span>Forum</span>
+          <span>กระทู้</span>
         </template>
         <ScrollPanel style="width: 100%; height: 480px">
           <div class="card p-3 mb-2" v-for="item in listPost">
@@ -123,11 +139,7 @@
             </p>
             <div class="flex justify-content-between align-items-start">
               <p class="font-bold text-lg">{{ item.content }}</p>
-              <Button
-                icon="pi pi-comment"
-                class="p-button-text p-button-lg"
-                @click="changeComment(item.id)"
-              >
+              <Button icon="pi pi-comment" class="p-button-text p-button-lg" @click="changeComment(item.id)">
               </Button>
             </div>
             <div class="comment" v-for="comments in item.comments">
@@ -147,13 +159,7 @@
           <hr />
           <div class="flex w-full">
             <InputText class="mr-2 w-full" v-model="centent" />
-            <Button
-              label="โพสต์"
-              icon="pi pi-send"
-              @click="createPost()"
-              class="p-buuton-text"
-              style="width: 100px"
-            >
+            <Button label="โพสต์" icon="pi pi-send" @click="createPost()" class="p-buuton-text" style="width: 100px">
             </Button>
           </div>
         </div>
@@ -161,21 +167,11 @@
           <hr />
           <div class="flex w-full">
             <InputText class="mr-2 w-full" v-model="centent" />
-            <Button
-              label="แสดงความคิดเห็น"
-              icon="pi pi-comment"
-              @click="createComment()"
-              class="p-buuton-text mr-2"
-              style="width: 250px"
-            >
+            <Button label="แสดงความคิดเห็น" icon="pi pi-comment" @click="createComment()" class="p-buuton-text mr-2"
+              style="width: 250px">
             </Button>
-            <Button
-              label="ยกเลิก"
-              icon="pi pi-comment"
-              @click="changePost()"
-              class="p-buuton-text p-button-danger"
-              style="width: 150px"
-            >
+            <Button label="ยกเลิก" icon="pi pi-comment" @click="changePost()" class="p-buuton-text p-button-danger"
+              style="width: 150px">
             </Button>
           </div>
         </div>
@@ -184,7 +180,7 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-users mr-2"></i>
-          <span>Members</span>
+          <span>ผู้เข้าร่วมคอร์ส</span>
         </template>
         <div class="flex justify-content-end align-items-center mb-3">
           <p class="text-base font-bold ml-1">สมาชิก {{ member }} คนได้เข้าร่วมแล้ว</p>
@@ -194,12 +190,8 @@
             <div class="col-4" v-for="item in course.enrollments">
               <div class="card shadow-1 p-3 flex justify-content-between align-items-center">
                 <p class="font-bold pt-3">{{ item.student.fullname }}</p>
-                <Button
-                  @click="createChat(item.student.id)"
-                  icon="pi pi-comments"
-                  class="p-button-primar1y p-button-text"
-                  v-if="item.student.id !== user.id"
-                />
+                <Button @click="createChat(item.student.id)" icon="pi pi-comments" class="p-button-primar1y p-button-text"
+                  v-show="item.student.id !== user.id" />
               </div>
             </div>
           </div>
@@ -209,7 +201,7 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-exclamation-circle mr-2"></i>
-          <span>Detail</span>
+          <span>รายละเอียด</span>
         </template>
         <div class="text-lg">
           <div class="flex">
@@ -259,16 +251,22 @@ export default {
         description: null,
         dueDate: new Date()
       },
+      formLecture: {
+        courseId: null,
+        content: null,
+      },
       user: {},
       course: {},
       listPost: {},
       listAssignment: {},
+      listLecture: {},
       postId: null,
       file: null,
       centent: '',
       member: 0,
       isPost: true,
-      visible: false
+      visible: false,
+      visibleLecture: false
     }
   },
   mounted() {
@@ -287,6 +285,18 @@ export default {
       this.postId = null
     },
 
+    resetFormLecture() {
+      this.formData.content = ''
+      this.file = null
+    },
+
+    resetFormAssignment() {
+      this.formData.title = ''
+      this.formData.description = ''
+      this.formData.dueDate = new Date()
+      this.file = null
+    },
+
     changePost() {
       this.isPost = true
       this.resetForm()
@@ -300,14 +310,7 @@ export default {
 
     handleClose(value) {
       this.visible = value
-    },
-
-    addBlog() {
-      console.log('add blog')
-    },
-
-    addAssignment() {
-      console.log('add assignment')
+      this.visibleLecture = value
     },
 
     async createChat(receiverId) {
@@ -336,8 +339,23 @@ export default {
           dueDate: this.formData.dueDate
         })
         this.visible = false
-        this.uploadFile()
-        this.resetForm()
+        this.uploadFile(this.file, res.data.newAssignment.id)
+        this.resetFormAssignment()
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async createLecture() {
+      try {
+        const res = await axios.post('http://localhost:8080/api/lecture/createLecture', {
+          courseId: this.id,
+          content: this.formLecture.content,
+        })
+        this.visibleLecture = false
+        this.uploadFileToLecture(this.file, res.data.newLecture.id)
+        this.resetFormLecture()
         this.getCourse()
       } catch (error) {
         console.log(error)
@@ -347,18 +365,25 @@ export default {
     onUpload(event) {
       const file = event.target.files[0]
       this.file = file
-      console.log(this.file)
     },
 
-    async uploadFile() {
+    async uploadFileToLecture(file, lectureId) {
       try {
-        const starsRef = storageRef(storage, `assignment/${this.id}/${file.name}`)
+        const starsRef = storageRef(storage, `lecture/${lectureId}/${file.name}`)
         await uploadBytes(starsRef, this.file)
       } catch (error) {
         console.log(error)
       }
     },
 
+    async uploadFile(file, assignmentId) {
+      try {
+        const starsRef = storageRef(storage, `assignment/${assignmentId}/${file.name}`)
+        await uploadBytes(starsRef, this.file)
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async createPost() {
       try {
         const res = await axios.post('http://localhost:8080/api/post/createPost', {
@@ -394,11 +419,44 @@ export default {
             id: this.id
           }
         })
+
+
+        const data = res.data.assignments
+        await Promise.all(
+          data.map(async (item) => {
+            const starsRef = storageRef(storage, `assignment/${item.id}`)
+            const search = await listAll(starsRef)
+            item.file = []
+
+            await Promise.all(
+              search.items.map(async (file) => {
+                const download = await getDownloadURL(file)
+                item.file.push({ url: download.toString(), name: file.name })
+              })
+            )
+          })
+        )
+
+        const dataLecture = res.data.lectures
+        await Promise.all(
+          dataLecture.map(async (item) => {
+            const starsRef = storageRef(storage, `lecture/${item.id}`)
+            const search = await listAll(starsRef)
+            item.file = []
+
+            await Promise.all(
+              search.items.map(async (file) => {
+                const download = await getDownloadURL(file)
+                item.file.push({ url: download.toString(), name: file.name })
+              })
+            )
+          })
+        )
+        this.listAssignment = data
+        this.listLecture = dataLecture
         this.course = Object(res.data)
         this.listPost = Object(res.data.posts)
-        this.listAssignment = Object(res.data.assignments)
         this.member = this.course.enrollments.length
-        // console.log(res.data)
       } catch (error) {
         console.log(error)
       }
@@ -452,5 +510,17 @@ export default {
 
 .custom-file-input:active::before {
   background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}
+
+.file-container {
+  color: #000;
+  background-color: whitesmoke;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.file-container:hover {
+  color: #14b8a6;
+  border: #14b8a6 solid 1px;
 }
 </style>

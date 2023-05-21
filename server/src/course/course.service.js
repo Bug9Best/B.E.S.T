@@ -45,6 +45,11 @@ export const show = async (id) => {
                 include: {
                     creator: true,
                 }
+            },
+            lectures: {
+                include: {
+                    files: true,
+                }
             }
         }
     });

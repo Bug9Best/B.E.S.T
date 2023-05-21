@@ -26,7 +26,6 @@ model User {
   assignments Assignment[]
   posts       Post[]
   comments    Comments[]
-  notify      Notify[]
   Receiver    RoomChat[]    @relation("ChatUser2")
   Sender      RoomChat[]    @relation("ChatUser1")
   Message     Message[]
@@ -40,6 +39,7 @@ model Course {
   description String
   owners      OwnerCourse[]
   enrollments Enrollment[]
+  lectures    Lecture[]
   assignments Assignment[]
   posts       Post[]
   File        File[]
@@ -59,6 +59,15 @@ model Enrollment {
   userId   Int
   course   Course @relation(fields: [courseId], references: [id])
   student  User   @relation(fields: [userId], references: [id])
+}
+
+model Lecture {
+  id          Int      @id @default(autoincrement())
+  courseId    Int
+  content       String
+  createdAt   DateTime @default(now())
+  course      Course   @relation(fields: [courseId], references: [id])
+  files       File[]
 }
 
 model Assignment {
@@ -104,27 +113,14 @@ model File {
   courseId     Int?
   postId       Int?
   assignmentId Int?
+  lectureId    Int?
   course       Course?     @relation(fields: [courseId], references: [id])
-  post         Post?       @relation(fields: [postId], references: [id])
+  lecture      Lecture?    @relation(fields: [lectureId], references: [id])
   assignment   Assignment? @relation(fields: [assignmentId], references: [id])
-}
-
-enum NotifyStatus {
-  READ
-  UNREAD
-}
-
-model Notify {
-  id        Int          @id @default(autoincrement())
-  message   String
-  status    NotifyStatus @default(UNREAD)
-  createdAt DateTime     @default(now())
-  userId    Int
-  User      User         @relation(fields: [userId], references: [id])
+  post         Post?       @relation(fields: [postId], references: [id])
 }
 
 //chat model
-
 model RoomChat {
   id        Int       @id @default(autoincrement())
   name      String
