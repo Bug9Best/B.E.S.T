@@ -20,7 +20,8 @@
           </div>
         </ScrollPanel>
         <div class="flotbutton">
-          <Button class="p-button-text" label="เพิ่มเอกสาร" icon="pi pi-plus" @click="visibleLecture = true" />
+          <Button v-show="!isStudent" class="p-button-text" label="เพิ่มเอกสาร" icon="pi pi-plus"
+            @click="visibleLecture = true" />
           <Dialog modal header="เพิ่มเอกสารประกอบการเรียนการสอน" :visible="visibleLecture" @update:visible="handleClose"
             :style="{ width: '50vw' }">
             <div class="grid">
@@ -74,7 +75,8 @@
           </div>
         </ScrollPanel>
         <div class="flotbutton">
-          <Button class="p-button-text" label="สร้างการบ้าน" icon="pi pi-plus" @click="visible = true" />
+          <Button v-show="!isStudent" class="p-button-text" label="สร้างการบ้าน" icon="pi pi-plus"
+            @click="visible = true" />
           <Dialog modal header="เพิ่มงานมอบหมาย" :visible="visible" @update:visible="handleClose"
             :style="{ width: '50vw' }">
             <div class="grid">
@@ -226,6 +228,7 @@
       </TabPanel>
     </TabView>
   </div>
+  <Toast position="bottom-right" />
 </template>
 <script>
 import axios from 'axios'
@@ -265,11 +268,17 @@ export default {
       member: 0,
       isPost: true,
       visible: false,
-      visibleLecture: false
+      visibleLecture: false,
+      isStudent: true
     }
   },
   mounted() {
     this.user = JSON.parse(localStorage.getItem('user'))
+    if (this.user.role == 'Student') {
+      this.isStudent = true
+    } else {
+      this.isStudent = false
+    }
     this.getCourse()
   },
 
@@ -340,14 +349,17 @@ export default {
         })
         this.visible = false
         this.uploadFile(this.file, res.data.newAssignment.id)
+        this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มงานมอบหมายสำเร็จ!', life: 3000 });
         this.resetFormAssignment()
         this.getCourse()
       } catch (error) {
         console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
       }
     },
 
     async createLecture() {
+
       try {
         const res = await axios.post('http://localhost:8080/api/lecture/createLecture', {
           courseId: this.id,
@@ -355,10 +367,12 @@ export default {
         })
         this.visibleLecture = false
         this.uploadFileToLecture(this.file, res.data.newLecture.id)
+        this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.resetFormLecture()
         this.getCourse()
       } catch (error) {
         console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
       }
     },
 
@@ -391,10 +405,12 @@ export default {
           authorId: this.user.id,
           content: this.centent
         })
+        this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'โพสกระทู้สำเร็จ!', life: 3000 });
         this.resetForm()
         this.getCourse()
       } catch (error) {
         console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
       }
     },
 
@@ -405,10 +421,12 @@ export default {
           authorId: this.user.id,
           content: this.centent
         })
+        this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'ตอบกลับสำเร็จ!', life: 3000 });
         this.resetForm()
         this.getCourse()
       } catch (error) {
         console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
       }
     },
 
