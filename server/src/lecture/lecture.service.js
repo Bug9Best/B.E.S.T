@@ -5,7 +5,7 @@ import createHttpError from "http-errors";
 
 export const getAll = async () => {
     try {
-        const allAssignment = await prisma.assignment.findMany();
+        const allAssignment = await prisma.lecture.findMany();
         return { allAssignment };
     } catch (error) {
         throw createHttpError.Unauthorized("this Course not found.");
@@ -13,7 +13,7 @@ export const getAll = async () => {
 }
 
 export const show = async (id) => {
-    const oneAssignment = await prisma.assignment.findUnique({
+    const oneAssignment = await prisma.lecture.findUnique({
         where: { id: id },
     });
 
@@ -23,14 +23,11 @@ export const show = async (id) => {
 
 };
 
-export const create = async (courseId, creatorId, title, description, dueDate) => {
-    const newAssignment = await prisma.assignment.create({
+export const create = async (courseId, content) => {
+    const newLecture = await prisma.lecture.create({
         data: {
             courseId: parseInt(courseId),
-            creatorId: parseInt(creatorId),
-            title: title,
-            description: description,
-            dueDate: dueDate,
+            content: content,
         }
     })
 
@@ -54,7 +51,7 @@ export const create = async (courseId, creatorId, title, description, dueDate) =
 
     // io.emit("enroll")
 
-    return { newAssignment, enroll };
+    return { newLecture, enroll };
 };
 
 export const update = async (courseId, title, dexcription) => {

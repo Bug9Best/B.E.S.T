@@ -10,16 +10,14 @@ router.post("/createLecture", async (req, res) => {
 
         const isValid = await createLectureValidate.isValid({
             courseId: data.courseId,
-            creatorId: data.creatorId,
-            title: data.title,
-            description: data.description,
+            content: data.content,
         });
 
         if (!isValid) {
             throw createHttpError.Unauthorized("data invalid");
         }
 
-        let lecture = await lectureService.create(data.courseId, data.creatorId, data.title, data.description);
+        let lecture = await lectureService.create(data.courseId, data.content);
 
         res.json(lecture);
     } catch (e) {

@@ -5,20 +5,56 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-book mr-2"></i>
-          <span>Lectures</span>
+          <span>เอกสารประกอบการเรียน</span>
         </template>
-        <div class="card shadow-1 p-3">
-          <p class="font-bold">Topic 1</p>
-        </div>
+        <ScrollPanel style="width: 100%; height: 550px">
+          <div class="card shadow-1 py-3" v-for="item in listLecture">
+            <div class="font-bold">{{ item.content }}</div>
+            <div v-if="item.file.length">
+              <div v-for="file in item.file" class="flex flex-column mb-1">
+                <hr>
+                <div class="text-sm">ไฟล์แนบ : </div>
+                <a class="file-container mt-2" :href="file.url"> {{ file.name }} </a>
+              </div>
+            </div>
+          </div>
+        </ScrollPanel>
         <div class="flotbutton">
-          <Button class="p-button-text" label="เพิ่มเอกสาร" icon="pi pi-plus" @click="addAssignment()" />
+          <Button class="p-button-text" label="เพิ่มเอกสาร" icon="pi pi-plus" @click="visibleLecture = true" />
+          <Dialog modal header="เพิ่มเอกสารประกอบการเรียนการสอน" :visible="visibleLecture" @update:visible="handleClose"
+            :style="{ width: '50vw' }">
+            <div class="grid">
+              <div class="col-3">
+                <label for="content" class="text-lg">รายละเอียด</label>
+              </div>
+              <div class="col-9">
+                <InputTextarea rows="5" id="content" v-model="formLecture.content" class="w-full"></InputTextarea>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="col-3">
+                <label for="file" class="text-lg">ไฟล์</label>
+              </div>
+              <div class="col-9">
+                <input type="file" class="custom-file-input" @change="onUpload" />
+              </div>
+            </div>
+
+            <div class="grid mt-2">
+              <div class="col-9 col-offset-3">
+                <Button @click="createLecture" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
+                </Button>
+              </div>
+            </div>
+          </Dialog>
         </div>
       </TabPanel>
 
       <TabPanel>
         <template #header>
           <i class="pi pi-file mr-2"></i>
-          <span>Assignments</span>
+          <span>งานที่มอบหมาย</span>
         </template>
         <ScrollPanel style="width: 100%; height: 550px">
           <div class="card shadow-1 py-3" v-for="item in listAssignment">
@@ -92,7 +128,7 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-clone mr-2"></i>
-          <span>Forum</span>
+          <span>กระทู้</span>
         </template>
         <ScrollPanel style="width: 100%; height: 480px">
           <div class="card p-3 mb-2" v-for="item in listPost">
@@ -144,7 +180,7 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-users mr-2"></i>
-          <span>Members</span>
+          <span>ผู้เข้าร่วมคอร์ส</span>
         </template>
         <div class="flex justify-content-end align-items-center mb-3">
           <p class="text-base font-bold ml-1">สมาชิก {{ member }} คนได้เข้าร่วมแล้ว</p>
@@ -155,7 +191,7 @@
               <div class="card shadow-1 p-3 flex justify-content-between align-items-center">
                 <p class="font-bold pt-3">{{ item.student.fullname }}</p>
                 <Button @click="createChat(item.student.id)" icon="pi pi-comments" class="p-button-primar1y p-button-text"
-                  v-if="item.student.id !== user.id" />
+                  v-show="item.student.id !== user.id" />
               </div>
             </div>
           </div>
@@ -165,7 +201,7 @@
       <TabPanel>
         <template #header>
           <i class="pi pi-exclamation-circle mr-2"></i>
-          <span>Detail</span>
+          <span>รายละเอียด</span>
         </template>
         <div class="text-lg">
           <div class="flex">
@@ -215,16 +251,22 @@ export default {
         description: null,
         dueDate: new Date()
       },
+      formLecture: {
+        courseId: null,
+        content: null,
+      },
       user: {},
       course: {},
       listPost: {},
       listAssignment: {},
+      listLecture: {},
       postId: null,
       file: null,
       centent: '',
       member: 0,
       isPost: true,
-      visible: false
+      visible: false,
+      visibleLecture: false
     }
   },
   mounted() {
@@ -241,6 +283,11 @@ export default {
     resetForm() {
       this.centent = ''
       this.postId = null
+    },
+
+    resetFormLecture() {
+      this.formData.content = ''
+      this.file = null
     },
 
     resetFormAssignment() {
@@ -263,14 +310,7 @@ export default {
 
     handleClose(value) {
       this.visible = value
-    },
-
-    addBlog() {
-      console.log('add blog')
-    },
-
-    addAssignment() {
-      console.log('add assignment')
+      this.visibleLecture = value
     },
 
     async createChat(receiverId) {
@@ -307,9 +347,33 @@ export default {
       }
     },
 
+    async createLecture() {
+      try {
+        const res = await axios.post('http://localhost:8080/api/lecture/createLecture', {
+          courseId: this.id,
+          content: this.formLecture.content,
+        })
+        this.visibleLecture = false
+        this.uploadFileToLecture(this.file, res.data.newLecture.id)
+        this.resetFormLecture()
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     onUpload(event) {
       const file = event.target.files[0]
       this.file = file
+    },
+
+    async uploadFileToLecture(file, lectureId) {
+      try {
+        const starsRef = storageRef(storage, `lecture/${lectureId}/${file.name}`)
+        await uploadBytes(starsRef, this.file)
+      } catch (error) {
+        console.log(error)
+      }
     },
 
     async uploadFile(file, assignmentId) {
@@ -320,7 +384,6 @@ export default {
         console.log(error)
       }
     },
-
     async createPost() {
       try {
         const res = await axios.post('http://localhost:8080/api/post/createPost', {
@@ -357,6 +420,7 @@ export default {
           }
         })
 
+
         const data = res.data.assignments
         await Promise.all(
           data.map(async (item) => {
@@ -372,11 +436,27 @@ export default {
             )
           })
         )
+
+        const dataLecture = res.data.lectures
+        await Promise.all(
+          dataLecture.map(async (item) => {
+            const starsRef = storageRef(storage, `lecture/${item.id}`)
+            const search = await listAll(starsRef)
+            item.file = []
+
+            await Promise.all(
+              search.items.map(async (file) => {
+                const download = await getDownloadURL(file)
+                item.file.push({ url: download.toString(), name: file.name })
+              })
+            )
+          })
+        )
         this.listAssignment = data
+        this.listLecture = dataLecture
         this.course = Object(res.data)
         this.listPost = Object(res.data.posts)
         this.member = this.course.enrollments.length
-        // console.log(res.data)
       } catch (error) {
         console.log(error)
       }
