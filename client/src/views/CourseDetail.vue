@@ -286,7 +286,7 @@ export default {
                     dueDate: this.formData.dueDate,
                 })
                 this.visible = false
-                this.uploadFile();
+                this.uploadFile(this.file);
                 this.resetForm();
                 this.getCourse();
             } catch (error) {
@@ -300,10 +300,18 @@ export default {
             console.log(this.file);
         },
 
-        async uploadFile() {
+        async uploadFile(file) {
             try {
-                const starsRef = storageRef(storage, `assignment/${this.id}/${file.name}`);
-                await uploadBytes(starsRef, this.file);
+                const starsRef = storageRef(storage, `assignments/${this.id}/${this.user.id}/${file.name}`);
+                await uploadBytes(starsRef, file);
+                console.log('Uploaded Success');
+            } catch (error) {
+                console.log(error);
+            }
+            try {
+                const starsRef = storageRef(storage, `course/${this.id}/${file.name}`);
+                await uploadBytes(starsRef, file);
+                console.log('Uploaded Success');
             } catch (error) {
                 console.log(error);
             }

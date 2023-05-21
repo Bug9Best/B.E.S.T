@@ -4,6 +4,7 @@ import cors from "cors";
 
 import auth from "./auth/auth.controller.js";
 import course from "./course/course.controller.js";
+import lecture from "./lecture/lecture.controller.js";
 import assignment from "./assignment/assignment.controller.js";
 import post from "./post/post.controller.js";
 import comment from "./comment/comment.controller.js";
@@ -33,6 +34,7 @@ app.use(
   router.use("/auth", auth),
   router.use("/testSocket", testSocket),
   router.use("/course", course),
+  router.use("/lecture", lecture),
   router.use("/assignment", assignment),
   router.use("/enrollment", enrollment),
   router.use("/post", post),
