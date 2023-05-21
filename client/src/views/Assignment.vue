@@ -7,7 +7,7 @@
 
     <div v-else class="w-full flex flex-column">
       <div class="" v-for="(item, index) in asssignment" :key="index">
-        <div>{{ new Date(item.createdAt).toLocaleDateString('th') }}</div>
+        <div class="mb-3 font-bold">วันที่ : {{ item.createdAtDate }}</div>
         <div class="mt-2 border border border-round shadow-1 p-2 flex flex-column hover:shadow-2"
           v-for="(item, index) in item.items" :key="index">
           <div class="flex justify-content-between px-3 py-1">
@@ -56,11 +56,12 @@ export default {
       return Object.values(
         data.reduce((result, item) => {
           const { createdAt } = item
-          if (!result[createdAt]) {
-            result[createdAt] = { createdAt, items: [] }
+          const createdAtDate = new Date(createdAt).toLocaleDateString('th')
+          if (!result[createdAtDate]) {
+            result[createdAtDate] = { createdAtDate, items: [] }
           }
 
-          result[createdAt].items.push(item)
+          result[createdAtDate].items.push(item)
 
           return result
         }, {})
@@ -70,15 +71,12 @@ export default {
       try {
         const res = await axios.get(`http://localhost:8080/api/user/assignment/${this.userId}`)
         const data = res.data
-        console.log(data)
 
         await Promise.all(
           data.map(async (item) => {
             const starsRef = storageRef(storage, `assignment/${item.id}`)
             const search = await listAll(starsRef)
             item.file = []
-
-            console.log(search)
 
             await Promise.all(
               search.items.map(async (file) => {
@@ -89,6 +87,7 @@ export default {
           })
         )
         const group = await this.groupByDate(data)
+        console.log(group)
         this.asssignment = group
       } catch (error) {
         console.log(error)

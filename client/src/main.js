@@ -33,6 +33,8 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import ProgressBar from 'primevue/progressbar';
 import ProgressSpinner from 'primevue/progressspinner';
+import Avatar from 'primevue/avatar';
+import AvatarGroup from 'primevue/avatargroup';
 
 import Sidebar from 'primevue/sidebar';
 import Menu from 'primevue/menu';
@@ -85,6 +87,7 @@ app.component('ProgressSpinner', ProgressSpinner);
 app.component('Sidebar', Sidebar);
 app.component('Menu', Menu);
 app.component('TabMenu', TabMenu);
+app.component('Avatar', Avatar);
 app.component('TabView', TabView);
 app.component('TabPanel', TabPanel);
 app.component('ScrollPanel', ScrollPanel);
