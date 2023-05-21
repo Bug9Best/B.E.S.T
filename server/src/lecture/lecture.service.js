@@ -45,11 +45,10 @@ export const create = async (courseId, content) => {
         }
     });
 
-    // enroll.forEach(async (enroll) => {
-    //     const sendMail = await mailService.onAssign(enroll.student.email, enroll.student.fullname, course.title);
-    // });
+    enroll.forEach(async (enroll) => {
+        const sendMail = await mailService.onLecture(enroll.student.email, enroll.student.fullname, course.title);
+    });
 
-    // io.emit("enroll")
 
     return { newLecture, enroll };
 };

@@ -26,7 +26,6 @@ model User {
   assignments Assignment[]
   posts       Post[]
   comments    Comments[]
-  notify      Notify[]
   Receiver    RoomChat[]    @relation("ChatUser2")
   Sender      RoomChat[]    @relation("ChatUser1")
   Message     Message[]
@@ -121,22 +120,7 @@ model File {
   post         Post?       @relation(fields: [postId], references: [id])
 }
 
-enum NotifyStatus {
-  READ
-  UNREAD
-}
-
-model Notify {
-  id        Int          @id @default(autoincrement())
-  message   String
-  status    NotifyStatus @default(UNREAD)
-  createdAt DateTime     @default(now())
-  userId    Int
-  User      User         @relation(fields: [userId], references: [id])
-}
-
 //chat model
-
 model RoomChat {
   id        Int       @id @default(autoincrement())
   name      String
