@@ -1,7 +1,7 @@
 <template>
   <div class="card fadein animation-duration-200">
     <div class="flex justify-content-end mb-4">
-      <Button v-show="isStudent" @click="visible = true" label="เพิ่มคอร์ส" icon="pi pi-plus" size="small">
+      <Button v-show="!isStudent" @click="visible = true" label="เพิ่มคอร์ส" icon="pi pi-plus" size="small">
       </Button>
       <Dialog modal header="เพิ่มคอร์สเรียน" :visible="visible" @update:visible="handleClose" :style="{ width: '50vw' }">
         <div class="grid mt-2">
@@ -103,6 +103,11 @@ export default {
   },
   created() {
     this.user = JSON.parse(localStorage.getItem('user'))
+    if (this.user.role == 'Student') {
+      this.isStudent = true
+    } else {
+      this.isStudent = false
+    }
   },
   mounted() {
     this.getCourse()
