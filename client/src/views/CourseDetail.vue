@@ -62,8 +62,7 @@
             <div class="text-sm">{{ item.description }}</div>
             <div class="text-sm">
               ครบกำหนด :
-              {{ new Date(item.createdAt).toLocaleDateString() }}
-              {{ new Date(item.createdAt).toTimeString().substring(0, 8) }}
+              {{ new Date(item.dueDate).toLocaleDateString() }}
             </div>
             <div v-if="item.file.length">
               <div v-for="file in item.file" class="flex flex-column mb-1">
@@ -249,7 +248,7 @@ export default {
         creatorId: null,
         title: null,
         description: null,
-        dueDate: new Date()
+        dueDate: null
       },
       formLecture: {
         courseId: null,
@@ -330,6 +329,7 @@ export default {
     },
 
     async createAssignment() {
+      console.log(this.formData)
       try {
         const res = await axios.post('http://localhost:8080/api/assignment/createAssignment', {
           courseId: this.id,

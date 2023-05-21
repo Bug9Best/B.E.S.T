@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 export const getAll = async () => {
     try {
         const allAssignment = await prisma.assignment.findMany();
-        return { allAssignment };
+        return allAssignment;
     } catch (error) {
         throw createHttpError.Unauthorized("this Course not found.");
     }
@@ -51,8 +51,6 @@ export const create = async (courseId, creatorId, title, description, dueDate) =
     enroll.forEach(async (enroll) => {
         const sendMail = await mailService.onAssign(enroll.student.email, enroll.student.fullname, course.title);
     });
-
-    io.emit("enroll")
 
     return { newAssignment, enroll };
 };
