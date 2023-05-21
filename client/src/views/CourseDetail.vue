@@ -68,8 +68,9 @@
                                 <label for="file" class="text-lg">ไฟล์</label>
                             </div>
                             <div class="col-9">
-                                <FileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*"
-                                    :maxFileSize="1000000" @upload="onUpload" class="p-button-sm p-button-outlined" />
+                                <!-- <FileUpload mode="basic" name="demo[]"  accept="image/*"
+                                    :maxFileSize="1000000" @upload="onUpload($event)" class="p-button-sm p-button-outlined" />-->
+                                <input type="file" class="custom-file-input" @change="onUpload">
                             </div>
                         </div>
 
@@ -187,7 +188,10 @@
 </template>
 <script>
 import axios from 'axios'
-import Course from '../public/json/course.json'
+import { ref as storageRef, getDownloadURL, listAll, uploadBytes } from 'firebase/storage'
+import { useFirebaseStorage } from "vuefire";
+const storage = useFirebaseStorage();
+
 export default {
     name: "CourseDetail",
     props: {
@@ -210,6 +214,7 @@ export default {
             listPost: {},
             listAssignment: {},
             postId: null,
+            file: null,
             centent: "",
             member: 0,
             isPost: true,
@@ -228,6 +233,7 @@ export default {
         }
     },
     methods: {
+
         resetForm() {
             this.centent = '';
             this.postId = null;
@@ -280,10 +286,26 @@ export default {
                     dueDate: this.formData.dueDate,
                 })
                 this.visible = false
+                this.uploadFile();
                 this.resetForm();
                 this.getCourse();
             } catch (error) {
                 console.log(error)
+            }
+        },
+
+        onUpload(event) {
+            const file = event.target.files[0];
+            this.file = file;
+            console.log(this.file);
+        },
+
+        async uploadFile() {
+            try {
+                const starsRef = storageRef(storage, `assignment/${this.id}/${file.name}`);
+                await uploadBytes(starsRef, this.file);
+            } catch (error) {
+                console.log(error);
             }
         },
 
@@ -353,5 +375,32 @@ export default {
     bottom: 0;
     left: 0;
     width: 100%;
+}
+
+.custom-file-input::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+.custom-file-input::before {
+    content: 'อัพโหลดไฟล์';
+    display: inline-block;
+    background: linear-gradient(top, #f9f9f9, #e3e3e3);
+    border: 1px solid rgb(211, 211, 211);
+    border-radius: 6px;
+    padding: 8px 16px;
+    outline: none;
+    white-space: nowrap;
+    cursor: pointer;
+    text-shadow: 1px 1px #fff;
+    font-weight: 700;
+    font-size: 10pt;
+}
+
+.custom-file-input:hover::before {
+    border-color: #14B8A6;
+}
+
+.custom-file-input:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
 }
 </style>

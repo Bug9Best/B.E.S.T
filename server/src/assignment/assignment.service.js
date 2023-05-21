@@ -48,9 +48,9 @@ export const create = async (courseId, creatorId, title, description, dueDate) =
         }
     });
 
-    enroll.forEach(async (enroll) => {
-        const sendMail = await mailService.onAssign(enroll.student.email, enroll.student.fullname, course.title);
-    });
+    // enroll.forEach(async (enroll) => {
+    //     const sendMail = await mailService.onAssign(enroll.student.email, enroll.student.fullname, course.title);
+    // });
 
     // io.emit("enroll")
 
