@@ -71,33 +71,22 @@ export default {
         const res = await axios.get(`http://localhost:8080/api/user/assignment/${this.userId}`)
         const data = res.data
 
-        console.log(data)
-
         await Promise.all(
           data.map(async (item) => {
-            const starsRef = storageRef(storage, 'assignments/' + item.id)
+            const starsRef = storageRef(storage, `assignments/${item.courseId}/${this.userId}`)
             const search = await listAll(starsRef)
             item.file = []
-
-            console.log(search)
 
             await Promise.all(
               search.items.map(async (file) => {
                 const download = await getDownloadURL(file)
-                console.log(download)
                 item.file.push({ url: download.toString(), name: file.name })
               })
             )
           })
         )
-
         const group = await this.groupByDate(data)
-
-        console.log(group[0].items[0])
-        console.log(group[0].items[0])
-
         this.asssignment = group
-        console.log(this.asssignment[0].items[0])
       } catch (error) {
         console.log(error)
       }
