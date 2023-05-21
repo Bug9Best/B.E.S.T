@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AppLayout from '@/layout/AppLayout.vue';
-
+import AppLayout from '@/layout/AppLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,9 +15,9 @@ const router = createRouter({
       component: () => import('../views/Profile.vue')
     },
     {
-      path: "/testsocket",
-      name: "testsocket",
-      component: () => import("../views/TestSocket.vue"),
+      path: '/testsocket',
+      name: 'testsocket',
+      component: () => import('../views/TestSocket.vue')
     },
     {
       path: '/',
@@ -75,10 +74,26 @@ const router = createRouter({
           name: 'course_detail',
           component: () => import('../views/CourseDetail.vue'),
           props: true
-        },
+        }
       ]
-    },
+    }
   ]
+})
+
+// GOOD
+router.beforeEach((to, from, next) => {
+  const authentication = localStorage.getItem('user')
+  if (to.fullPath === '/') {
+    if (!authentication) {
+      next('/signin');
+    }
+  }
+  if (to.fullPath === '/login') {
+    if (authentication) {
+      next('/course');
+    }
+  }
+  next();
 })
 
 export default router

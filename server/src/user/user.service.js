@@ -57,7 +57,6 @@ export const getChat = async (userId) => {
   }
 
   const mixChat = [...myChat.Receiver, ...myChat.Sender];
-  console.log(mixChat);
   return mixChat;
 };
 
