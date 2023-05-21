@@ -74,6 +74,7 @@
       <span class="mt-4 text-xl text-400">ยังไม่มีคอร์สในขณะนี้</span>
     </div>
   </div>
+  <Toast position="bottom-right" />
 </template>
 
 <style setup>
@@ -149,16 +150,11 @@ export default {
               courseId: id,
               userId: this.user.id
             })
-            this.$toast.add({
-              severity: 'info',
-              summary: 'Confirmed',
-              detail: 'Record deleted',
-              life: 3000
-            })
-
+            this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เข้าร่วมคอร์สเรียนสำเร็จ!', life: 3000 });
             this.getEnroll()
           } catch (error) {
             console.log(error)
+            this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
           }
         }
       })
@@ -168,10 +164,12 @@ export default {
       try {
         const res = await axios.post('http://localhost:8080/api/course/createCourse', this.formData)
         this.visible = false
+        this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มคอร์สเรียนสำเร็จ!', life: 3000 });
         this.resetForm()
         this.getCourse()
       } catch (error) {
         console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
       }
     },
 
