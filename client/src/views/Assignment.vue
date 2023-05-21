@@ -70,12 +70,15 @@ export default {
       try {
         const res = await axios.get(`http://localhost:8080/api/user/assignment/${this.userId}`)
         const data = res.data
+        console.log(data)
 
         await Promise.all(
           data.map(async (item) => {
-            const starsRef = storageRef(storage, `assignments/${item.courseId}/${this.userId}`)
+            const starsRef = storageRef(storage, `assignment/${item.id}`)
             const search = await listAll(starsRef)
             item.file = []
+
+            console.log(search)
 
             await Promise.all(
               search.items.map(async (file) => {
