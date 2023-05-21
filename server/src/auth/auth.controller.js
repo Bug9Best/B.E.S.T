@@ -26,14 +26,15 @@ router.post("/login", async (req, res) => {
 
     let user = await authservice.ldapLogin(data.username, data.password);
 
-    // let arrayResult = user.dn.split(",");
+    let arrayResult = user.dn.split(",");
     let username = user.username;
     let password = user.password;
-    // let email = arrayResult[0].slice(3);
-    // let fullname = arrayResult[0].slice(3);
-    // let generation = arrayResult[1].slice(3);
-    // let degree = arrayResult[2].slice(3);
-    // let role = arrayResult[3].slice(3);
+    let email = arrayResult[0].slice(3);
+    let fullname = arrayResult[0].slice(3);
+    let generation = arrayResult[1].slice(3);
+    let degree = arrayResult[2].slice(3);
+    let role = arrayResult[3].slice(3);
+
     res.json([
       {
         username: username,
