@@ -146,7 +146,7 @@ export default {
           class="p-button-text p-button-plain px-3 py-0"
         >
           <div class="flex align-items-center">
-            <p class="mt-3 mr-2 text-lg text-900">{{ this.user.fullname }}</p>
+            <p class="mt-3 mr-2 text-lg text-900">{{ this.user?.fullname }}</p>
             <div
               class="border-circle flex align-items-center justify-content-center"
               style="

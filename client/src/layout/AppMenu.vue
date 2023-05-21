@@ -66,7 +66,7 @@ export default {
       try {
         const res = await axios.get('http://localhost:8080/api/enrollment/getEnroll', {
           params: {
-            id: this.user.id
+            id: this.user?.id
           }
         })
         this.myCourse = res.data.map((course) => {
