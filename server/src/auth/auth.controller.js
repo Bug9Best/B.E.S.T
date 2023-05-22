@@ -17,35 +17,19 @@ router.post("/loginCred", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const data = req.body;
-    console.log(data);
-
-    const isValid = await loginValidate.isValid({ ...data });
-    if (!isValid) {
-      throw createHttpError.Unauthorized("data invalid");
-    }
-
     let user = await authservice.ldapLogin(data.username, data.password);
 
     let arrayResult = user.dn.split(",");
-    let username = user.username;
-    let password = user.password;
-    let email = arrayResult[0].slice(3);
+    let username = data.username;
+    let password = data.password;
+    let email = data.username.slice(2) + "@it.kmitl.ac.th";
     let fullname = arrayResult[0].slice(3);
     let generation = arrayResult[1].slice(3);
     let degree = arrayResult[2].slice(3);
     let role = arrayResult[3].slice(3);
 
-    res.json([
-      {
-        username: username,
-        password: password,
-        email: "email",
-        fullname: "fullname",
-        generation: "generation",
-        degree: "degree",
-        role: "role",
-      },
-    ]);
+    let newUser = await authservice.createUser(username, password, email, fullname, generation, degree, role);
+    res.json(newUser);
   } catch (e) {
     res.status(e.status || 500).json({ message: e.message });
   }
