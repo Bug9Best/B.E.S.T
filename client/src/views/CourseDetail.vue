@@ -9,7 +9,14 @@
         </template>
         <ScrollPanel style="width: 100%; height: 550px">
           <div class="card shadow-1 py-3" v-for="item in listLecture">
-            <div class="font-bold">{{ item.content }}</div>
+            <div class="flex justify-content-between align-items-center">
+              <div class="font-bold">{{ item.content }}</div>
+              <div v-if="this.authorId == this.user.id">
+                <Button @click="deleteLecture(item.id)" class="p-button-text p-button-danger p-button-rounded"
+                  icon="pi pi-trash"></Button>
+              </div>
+            </div>
+
             <div v-if="item.file.length">
               <div v-for="file in item.file" class="flex flex-column mb-1">
                 <hr>
@@ -59,7 +66,13 @@
         </template>
         <ScrollPanel style="width: 100%; height: 550px">
           <div class="card shadow-1 py-3" v-for="item in listAssignment">
-            <div class="font-bold">{{ item.title }}</div>
+            <div class="flex justify-content-between">
+              <div class="font-bold">{{ item.title }}</div>
+              <div v-if="this.authorId == this.user.id">
+                <Button @click="deleteAssignment(item.id)" class="p-button-text p-button-danger p-button-rounded"
+                  icon="pi pi-trash"></Button>
+              </div>
+            </div>
             <div class="text-sm">{{ item.description }}</div>
             <div class="text-sm">
               ครบกำหนด :
@@ -153,18 +166,34 @@
             </p>
             <div class="flex justify-content-between align-items-start">
               <p class="font-bold text-lg">{{ item.content }}</p>
-              <Button icon="pi pi-comment" class="p-button-text p-button-lg" @click="changeComment(item.id)">
-              </Button>
+              <div class="flex align-items-center">
+                <Button icon="pi pi-comment" class="p-button-text p-button-lg" @click="changeComment(item.id)">
+                </Button>
+                <div v-if="this.authorId == this.user.id">
+                  <Button @click="deletePost(item.id)" class="p-button-text p-button-danger p-button-rounded"
+                    icon="pi pi-trash"></Button>
+                </div>
+              </div>
             </div>
             <div class="comment" v-for="comments in item.comments">
               <hr />
-              <div class="text-sm">
-                {{ comments.author.fullname }} :
-                {{ new Date(comments.createdAt).toLocaleDateString() }}
-                {{ new Date(comments.createdAt).toTimeString().substring(0, 8) }}
-              </div>
-              <div class="mt-2 font-bold">
-                {{ comments.content }}
+              <div class="flex justify-content-between">
+                <div class="flex flex-column">
+                  <div class="text-sm">
+                    {{ comments.author.fullname }} :
+                    {{ new Date(comments.createdAt).toLocaleDateString() }}
+                    {{ new Date(comments.createdAt).toTimeString().substring(0, 8) }}
+                  </div>
+                  <div class="mt-2 font-bold">
+                    {{ comments.content }}
+                  </div>
+                </div>
+                <div>
+                  <div v-if="this.authorId == this.user.id">
+                    <Button @click="deleteComment(comments.id)" class="p-button-text p-button-danger p-button-rounded"
+                      icon="pi pi-trash"></Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -197,7 +226,7 @@
           <span>ผู้เข้าร่วมคอร์ส</span>
         </template>
         <div class="flex justify-content-end align-items-center mb-3">
-          <p class="text-base font-bold ml-1">สมาชิก {{ member }} คนได้เข้าร่วมแล้ว</p>
+          <div class="text-base font-bold ml-1">สมาชิก {{ member }} คนได้เข้าร่วมแล้ว</div>
         </div>
         <ScrollPanel style="width: 100%; height: 460px">
           <div class="grid overflow-hidden">
@@ -286,6 +315,8 @@ export default {
       visible: false,
       visibleLecture: false,
       isStudent: true,
+
+      authorId: null,
 
       submitted: false,
       showMessage: false
@@ -403,6 +434,17 @@ export default {
       }
     },
 
+    async deleteAssignment(id) {
+      try {
+        const res = await axios.delete(`http://localhost:8080/api/assignment/deleteAssignment/${id}`)
+        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบงานมอบหมายสำเร็จ!', life: 3000 });
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
+      }
+    },
+
     async createLecture() {
 
       try {
@@ -414,6 +456,17 @@ export default {
         this.uploadFileToLecture(this.file, res.data.newLecture.id)
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.resetFormLecture()
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
+      }
+    },
+
+    async deleteLecture(id) {
+      try {
+        const res = await axios.delete(`http://localhost:8080/api/lecture/deleteLecture/${id}`)
+        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
         console.log(error)
@@ -459,6 +512,17 @@ export default {
       }
     },
 
+    async deletePost(id) {
+      try {
+        const res = await axios.delete(`http://localhost:8080/api/post/deletePost/${id}`)
+        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบโพสสำเร็จ!', life: 3000 });
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
+      }
+    },
+
     async createComment() {
       try {
         const res = await axios.post('http://localhost:8080/api/comment/createComment', {
@@ -476,6 +540,33 @@ export default {
       }
     },
 
+    async deleteComment(id) {
+      console.log(id)
+      try {
+        const res = await axios.delete(`http://localhost:8080/api/comment/deleteComment/${id}`)
+        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบคอมเมนต์สำเร็จ!', life: 3000 });
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
+      }
+    },
+
+    async exitCourse(id) {
+      console.log(id)
+      try {
+        const res = await axios.post(`http://localhost:8080/api/enrollment/exitCourse`, {
+          courseId: this.id,
+          userId: this.user.id
+        })
+        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบคอมเมนต์สำเร็จ!', life: 3000 });
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
+      }
+    },
+
     async getCourse() {
       try {
         const res = await axios.get('http://localhost:8080/api/course/getCourse/:id', {
@@ -484,6 +575,7 @@ export default {
           }
         })
 
+        this.authorId = res.data.owners[0].user.id
 
         const data = res.data.assignments
         await Promise.all(
