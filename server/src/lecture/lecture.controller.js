@@ -25,18 +25,20 @@ router.post("/createLecture", async (req, res) => {
     }
 });
 
-router.put("/updateLecture", async (req, res) => {
+router.put("/updateLecture/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        let lecture = await lectureService.update(req.courseId, req.title, req.description);
+        let lecture = await lectureService.update(id, req.body.title, req.body.description);
         res.json(lecture);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });
     }
 });
 
-router.delete("/deleteLecture", async (req, res) => {
+router.delete("/deleteLecture/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        let lecture = await lectureService.remove(req.courseId);
+        let lecture = await lectureService.remove(id);
         res.json(lecture);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });
