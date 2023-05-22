@@ -44,7 +44,7 @@
 
             <div class="grid mt-2">
               <div class="col-9 col-offset-3">
-                <Button @click="createLecture" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
+                <Button @click="createLecture()" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
                 </Button>
               </div>
             </div>
@@ -79,49 +79,62 @@
             @click="visible = true" />
           <Dialog modal header="เพิ่มงานมอบหมาย" :visible="visible" @update:visible="handleClose"
             :style="{ width: '50vw' }">
-            <div class="grid">
-              <div class="col-3">
-                <label for="title" class="text-lg">ชื่องานที่มอบหมาย</label>
-              </div>
-              <div class="col-9">
-                <InputText id="title" v-model="formData.title" class="w-full" />
-              </div>
-            </div>
+            <form @submit.prevent="handleSubmitAssignment(!v$.$invalid)" class="p-fluid mt-4">
 
-            <div class="grid">
-              <div class="col-3">
-                <label for="description" class="text-lg">รายละเอียดงาน</label>
+              <div class="grid">
+                <div class="col-3">
+                  <label for="title" class="text-lg">ชื่องานที่มอบหมาย</label>
+                </div>
+                <div class="col-9">
+                  <InputText id="title" v-model="formData.title" class="w-full"
+                    :class="{ 'p-invalid': v$.formData.title.$invalid && submitted }" />
+                  <small v-if="(v$.formData.title.$invalid && submitted) || v$.formData.title.$pending.$response"
+                    class="p-error px-1">{{ v$.formData.title.required.$message.replace('Value',
+                      'ชื่องานที่มอบหมาย').replace('is required', 'จำเป็นต้องกรอก') }}
+                  </small>
+                </div>
               </div>
-              <div class="col-9">
-                <InputTextarea id="description" rows="5" v-model="formData.description" class="w-full">
-                </InputTextarea>
-              </div>
-            </div>
 
-            <div class="grid">
-              <div class="col-3">
-                <label for="duedate" class="text-lg">วันที่ครบกำหนด</label>
+              <div class="grid">
+                <div class="col-3">
+                  <label for="description" class="text-lg">รายละเอียดงาน</label>
+                </div>
+                <div class="col-9">
+                  <InputTextarea id="description" rows="5" v-model="formData.description" class="w-full">
+                  </InputTextarea>
+                </div>
               </div>
-              <div class="col-9">
-                <Calendar v-model="formData.dueDate" class="w-full" />
-              </div>
-            </div>
 
-            <div class="grid">
-              <div class="col-3">
-                <label for="file" class="text-lg">ไฟล์</label>
+              <div class="grid">
+                <div class="col-3">
+                  <label for="duedate" class="text-lg">วันที่ครบกำหนด</label>
+                </div>
+                <div class="col-9">
+                  <Calendar v-model="formData.dueDate" class="w-full"
+                    :class="{ 'p-invalid': v$.formData.dueDate.$invalid && submitted }" />
+                  <small v-if="(v$.formData.dueDate.$invalid && submitted) || v$.formData.dueDate.$pending.$response"
+                    class="p-error px-1">{{ v$.formData.dueDate.required.$message.replace('Value',
+                      'วันที่ครบกำหนด').replace('is required', 'จำเป็นต้องกรอก') }}
+                  </small>
+                </div>
               </div>
-              <div class="col-9">
-                <input type="file" class="custom-file-input" @change="onUpload" />
-              </div>
-            </div>
 
-            <div class="grid mt-2">
-              <div class="col-9 col-offset-3">
-                <Button @click="createAssignment" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
-                </Button>
+              <div class="grid">
+                <div class="col-3">
+                  <label for="file" class="text-lg">ไฟล์</label>
+                </div>
+                <div class="col-9">
+                  <input type="file" class="custom-file-input" @change="onUpload" />
+                </div>
               </div>
-            </div>
+
+              <div class="grid mt-2">
+                <div class="col-9 col-offset-3">
+                  <Button type="submit" label="สร้างงานมอบหมาย" icon="pi pi-save" size="small">
+                  </Button>
+                </div>
+              </div>
+            </form>
           </Dialog>
         </div>
       </TabPanel>
@@ -234,6 +247,8 @@
 import axios from 'axios'
 import { ref as storageRef, getDownloadURL, listAll, uploadBytes } from 'firebase/storage'
 import { useFirebaseStorage } from 'vuefire'
+import { required } from '@vuelidate/validators'
+import { useVuelidate } from '@vuelidate/core'
 const storage = useFirebaseStorage()
 
 export default {
@@ -244,6 +259,7 @@ export default {
       required: true
     }
   },
+  setup: () => ({ v$: useVuelidate() }),
   data() {
     return {
       formData: {
@@ -269,7 +285,18 @@ export default {
       isPost: true,
       visible: false,
       visibleLecture: false,
-      isStudent: true
+      isStudent: true,
+
+      submitted: false,
+      showMessage: false
+    }
+  },
+  validations() {
+    return {
+      formData: {
+        title: { required },
+        dueDate: { required },
+      },
     }
   },
   mounted() {
@@ -288,6 +315,24 @@ export default {
     }
   },
   methods: {
+    handleSubmitAssignment(isFormValid) {
+      this.submitted = true
+      if (!isFormValid) {
+        return
+      }
+      this.toggleDialog()
+      this.createAssignment()
+    },
+
+    toggleDialog() {
+      this.showMessage = !this.showMessage
+
+      if (!this.showMessage) {
+        this.resetFormLecture()
+        this.resetFormAssignment()
+      }
+    },
+
     resetForm() {
       this.centent = ''
       this.postId = null
@@ -423,6 +468,7 @@ export default {
         })
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'ตอบกลับสำเร็จ!', life: 3000 });
         this.resetForm()
+        this.isPost = true
         this.getCourse()
       } catch (error) {
         console.log(error)
