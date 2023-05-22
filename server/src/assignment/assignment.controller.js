@@ -48,17 +48,19 @@ router.post("/createAssignment", async (req, res) => {
 });
 
 router.put("/updateAssignment", async (req, res) => {
+    const id = req.params.id;
     try {
-        let assignment = await assignmentService.update(req.courseId, req.title, req.description);
+        let assignment = await assignmentService.update(id, req.body.title, req.body.description);
         res.json(assignment);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });
     }
 });
 
-router.delete("/deleteAssignment", async (req, res) => {
+router.delete("/deleteAssignment/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        let assignment = await assignmentService.remove(req.courseId);
+        let assignment = await assignmentService.remove(id);
         res.json(assignment);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });

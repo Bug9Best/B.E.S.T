@@ -55,23 +55,21 @@ export const create = async (courseId, creatorId, title, description, dueDate) =
     return { newAssignment, enroll };
 };
 
-export const update = async (courseId, title, dexcription) => {
-
+export const update = async (assignmentId, title, description) => {
     const updateAssignment = await prisma.assignment.update({
-        where: { courseId: courseId },
+        where: { id: parseInt(assignmentId) },
         data: {
-
             title: title,
-            description: dexcription,
+            description: description,
         }
     })
 
     return updateAssignment;
 }
 
-export const remove = async (courseId) => {
+export const remove = async (assignmentId) => {
     const removeAssignment = await prisma.assignment.delete({
-        where: { courseId: courseId },
+        where: { id: parseInt(assignmentId) },
     });
 
     return removeAssignment;
