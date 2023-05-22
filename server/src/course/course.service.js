@@ -1,6 +1,7 @@
 const prisma = new PrismaClient();
 import { PrismaClient, Prisma } from "@prisma/client";
 import createHttpError from "http-errors";
+import { io } from "../socket/index.js"
 
 export const getAll = async () => {
     const allCourse = await prisma.course.findMany({
@@ -59,12 +60,6 @@ export const show = async (id) => {
 };
 
 export const create = async (code, term, title, description, owner) => {
-    const findCourseId = await prisma.course.findUnique({
-        where: { code: code },
-    });
-
-    if (findCourseId) throw createHttpError.Unauthorized("This Course have alrady.");
-
     const newCourse = await prisma.course.create({
         data: {
             code: code,
@@ -74,14 +69,28 @@ export const create = async (code, term, title, description, owner) => {
         }
     })
 
-    const newOwner = await prisma.ownerCourse.create({
+    try {
+        const newOwner = await prisma.ownerCourse.create({
+            data: {
+                userId: owner,
+                courseId: newCourse.id,
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+
+
+    const autoEnroll = await prisma.enrollment.create({
         data: {
             userId: owner,
             courseId: newCourse.id,
         }
     })
 
-    return { newCourse, newOwner };
+    io.emit("enroll")
+
+    return { newCourse, autoEnroll };
 };
 
 export const update = async (id, code, title, description) => {
