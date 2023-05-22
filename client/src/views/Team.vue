@@ -2,7 +2,7 @@
     <div class="card layouts flex flex-column justify-content-center fadein animation-duration-200">
         <div class="surface-section text-center">
             <div class="mb-4 -mt-6 font-bold text-3xl">
-                <span class="text-blue-600">The Creator</span>
+                <span class="text-primary">The Creator</span>
                 <span class="text-900 ml-3">of B.E.S.T</span>
             </div>
             <div class="grid">
