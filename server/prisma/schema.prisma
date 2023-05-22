@@ -62,12 +62,12 @@ model Enrollment {
 }
 
 model Lecture {
-  id          Int      @id @default(autoincrement())
-  courseId    Int
-  content       String
-  createdAt   DateTime @default(now())
-  course      Course   @relation(fields: [courseId], references: [id])
-  files       File[]
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  content   String
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id])
+  files     File[]
 }
 
 model Assignment {
