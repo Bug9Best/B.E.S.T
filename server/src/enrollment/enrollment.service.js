@@ -44,10 +44,19 @@ export const create = async (courseId, userId) => {
     return { newEnroll, sendMail };
 };
 
-export const remove = async (id) => {
-    const removeCourse = await prisma.enrollment.delete({
-        where: { id: id },
+export const exit = async (courseId, userId) => {
+    const exitCourse = await prisma.enrollment.delete({
+        where: {
+            AND: [
+                {
+                    courseId: parseInt(courseId),
+                },
+                {
+                    userId: parseInt(userId),
+                },
+            ],
+        },
     });
 
-    return { removeCourse };
+    return { exitCourse };
 }
