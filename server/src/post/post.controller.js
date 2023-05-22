@@ -25,9 +25,10 @@ router.post("/createPost", async (req, res) => {
     }
 });
 
-router.delete("/deletePost", async (req, res) => {
+router.delete("/deletePost/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        let post = await postService.remove(req.courseId);
+        let post = await postService.remove(id);
         res.json(post);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });
