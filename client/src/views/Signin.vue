@@ -50,7 +50,8 @@ export default {
         })
 
         if (res) {
-          console.log(res.data)
+          localStorage.setItem('token', res.data.token)
+          this.$router.push('/course')
         }
       } catch (err) {
         console.log(err.message)
