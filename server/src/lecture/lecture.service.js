@@ -20,14 +20,15 @@ export const show = async (id) => {
     if (!oneAssignment) {
         throw createHttpError.Unauthorized("this Course not found.");
     }
-
 };
 
-export const create = async (courseId, content) => {
+export const create = async (courseId, content, fileName, fileUrl) => {
     const newLecture = await prisma.lecture.create({
         data: {
             courseId: parseInt(courseId),
             content: content,
+            fileName: fileName,
+            fileUrl: fileUrl
         }
     })
 

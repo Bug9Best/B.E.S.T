@@ -42,16 +42,8 @@ export const show = async (id) => {
                     }
                 }
             },
-            assignments: {
-                include: {
-                    creator: true,
-                }
-            },
-            lectures: {
-                include: {
-                    files: true,
-                }
-            }
+            assignments: true,
+            lectures: true
         }
     });
     if (!course) throw createHttpError.Unauthorized("This Course not found.");

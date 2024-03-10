@@ -23,7 +23,7 @@ export const show = async (id) => {
 
 };
 
-export const create = async (courseId, creatorId, title, description, dueDate) => {
+export const create = async (courseId, creatorId, title, description, dueDate, fileName, fileUrl) => {
     const newAssignment = await prisma.assignment.create({
         data: {
             courseId: parseInt(courseId),
@@ -31,6 +31,8 @@ export const create = async (courseId, creatorId, title, description, dueDate) =
             title: title,
             description: description,
             dueDate: dueDate,
+            fileName: fileName,
+            fileUrl: fileUrl,
         }
     })
 

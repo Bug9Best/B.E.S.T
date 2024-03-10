@@ -32,14 +32,24 @@ router.post("/createAssignment", async (req, res) => {
             creatorId: data.creatorId,
             title: data.title,
             description: data.description,
-            dueDate: data.dueDate
+            dueDate: data.dueDate,
+            fileName: data.fileName,
+            fileUrl: data.fileUrl,
         });
 
         if (!isValid) {
             throw createHttpError.Unauthorized("data invalid");
         }
 
-        let assignment = await assignmentService.create(data.courseId, data.creatorId, data.title, data.description, data.dueDate);
+        let assignment = await assignmentService.create(
+            data.courseId,
+            data.creatorId,
+            data.title,
+            data.description,
+            data.dueDate,
+            data.fileName,
+            data.fileUrl
+            );
 
         res.json(assignment);
     } catch (e) {

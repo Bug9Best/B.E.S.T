@@ -40,7 +40,7 @@ app.use(
   router.use("/post", post),
   router.use("/comment", comment),
   router.use("/user", user),
-  router.use("/chat", chat)
+  router.use("/chat", chat),
 );
 
 app.listen(port, () => {

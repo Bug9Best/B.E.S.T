@@ -42,7 +42,6 @@ model Course {
   lectures    Lecture[]
   assignments Assignment[]
   posts       Post[]
-  File        File[]
 }
 
 model OwnerCourse {
@@ -65,9 +64,10 @@ model Lecture {
   id        Int      @id @default(autoincrement())
   courseId  Int
   content   String
+  fileName  String
+  fileUrl   String
   createdAt DateTime @default(now())
   course    Course   @relation(fields: [courseId], references: [id])
-  files     File[]
 }
 
 model Assignment {
@@ -77,10 +77,11 @@ model Assignment {
   title       String
   description String
   dueDate     DateTime
+  fileName    String
+  fileUrl     String
   createdAt   DateTime @default(now())
   creator     User     @relation(fields: [creatorId], references: [id])
   course      Course   @relation(fields: [courseId], references: [id])
-  files       File[]
 }
 
 model Post {
@@ -92,7 +93,6 @@ model Post {
   comments  Comments[]
   author    User       @relation(fields: [authorId], references: [id])
   course    Course     @relation(fields: [courseId], references: [id])
-  files     File[]
 }
 
 model Comments {
@@ -103,21 +103,6 @@ model Comments {
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
   post      Post     @relation(fields: [postId], references: [id])
-}
-
-model File {
-  id           Int         @id @default(autoincrement())
-  filename     String
-  path         String
-  createdAt    DateTime    @default(now())
-  courseId     Int?
-  postId       Int?
-  assignmentId Int?
-  lectureId    Int?
-  course       Course?     @relation(fields: [courseId], references: [id])
-  lecture      Lecture?    @relation(fields: [lectureId], references: [id])
-  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
-  post         Post?       @relation(fields: [postId], references: [id])
 }
 
 //chat model

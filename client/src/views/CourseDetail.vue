@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/require-v-for-key -->
 <template>
   <div class="card layouts fadein animation-duration-200">
     <h5>{{ course.title }}</h5>
@@ -17,12 +18,10 @@
               </div>
             </div>
 
-            <div v-if="item.file.length">
-              <div v-for="file in item.file" class="flex flex-column mb-1">
-                <hr>
-                <div class="text-sm">ไฟล์แนบ : </div>
-                <a class="file-container mt-2" :href="file.url"> {{ file.name }} </a>
-              </div>
+            <div class="flex flex-column mb-1">
+              <hr>
+              <div class="text-sm">ไฟล์แนบ : </div>
+              <a class="file-container mt-2" target="_blank" :href="item.fileUrl"> {{ item.fileName }} </a>
             </div>
           </div>
         </ScrollPanel>
@@ -78,13 +77,12 @@
               ครบกำหนด :
               {{ new Date(item.dueDate).toLocaleDateString() }}
             </div>
-            <div v-if="item.file.length">
-              <div v-for="file in item.file" class="flex flex-column mb-1">
-                <hr>
-                <div class="text-sm">ไฟล์แนบ : </div>
-                <a class="file-container mt-2" :href="file.url"> {{ file.name }} </a>
-              </div>
+            <div class="flex flex-column mb-1">
+              <hr>
+              <div class="text-sm">ไฟล์แนบ : </div>
+              <a class="file-container mt-2" target="_blank" :href="item.fileUrl"> {{ item.fileName }} </a>
             </div>
+
           </div>
         </ScrollPanel>
         <div class="flotbutton">
@@ -103,7 +101,7 @@
                     :class="{ 'p-invalid': v$.formData.title.$invalid && submitted }" />
                   <small v-if="(v$.formData.title.$invalid && submitted) || v$.formData.title.$pending.$response"
                     class="p-error px-1">{{ v$.formData.title.required.$message.replace('Value',
-                      'ชื่องานที่มอบหมาย').replace('is required', 'จำเป็นต้องกรอก') }}
+      'ชื่องานที่มอบหมาย').replace('is required', 'จำเป็นต้องกรอก') }}
                   </small>
                 </div>
               </div>
@@ -127,7 +125,7 @@
                     :class="{ 'p-invalid': v$.formData.dueDate.$invalid && submitted }" />
                   <small v-if="(v$.formData.dueDate.$invalid && submitted) || v$.formData.dueDate.$pending.$response"
                     class="p-error px-1">{{ v$.formData.dueDate.required.$message.replace('Value',
-                      'วันที่ครบกำหนด').replace('is required', 'จำเป็นต้องกรอก') }}
+      'วันที่ครบกำหนด').replace('is required', 'จำเป็นต้องกรอก') }}
                   </small>
                 </div>
               </div>
@@ -233,8 +231,8 @@
             <div class="col-4" v-for="item in course.enrollments">
               <div class="card shadow-1 p-3 flex justify-content-between align-items-center">
                 <p class="font-bold pt-3">{{ item.student.fullname }}</p>
-                <Button @click="createChat(item.student.id)" icon="pi pi-comments" class="p-button-primar1y p-button-text"
-                  v-show="item.student.id !== user.id" />
+                <Button @click="createChat(item.student.id)" icon="pi pi-comments"
+                  class="p-button-primar1y p-button-text" v-show="item.student.id !== user.id" />
               </div>
             </div>
           </div>
@@ -274,11 +272,10 @@
 </template>
 <script>
 import axios from 'axios'
-import { ref as storageRef, getDownloadURL, listAll, uploadBytes } from 'firebase/storage'
-import { useFirebaseStorage } from 'vuefire'
 import { required } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
-const storage = useFirebaseStorage()
+import AWSS3UploadAshClient from 'aws-s3-upload-ash';
+
 
 export default {
   name: 'CourseDetail',
@@ -319,7 +316,14 @@ export default {
       authorId: null,
 
       submitted: false,
-      showMessage: false
+      showMessage: false,
+      config: {
+        bucketName: 'beststoragetrue',
+        region: 'us-east-1',
+        accessKeyId: 'AKIAU6GDWX7JNKIQ6Q4L',
+        secretAccessKey: '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',
+        s3Url: 'https://beststoragetrue.s3.amazonaws.com/'
+      }
     }
   },
   validations() {
@@ -413,18 +417,39 @@ export default {
       }
     },
 
-    async createAssignment() {
-      console.log(this.formData)
-      try {
-        const res = await axios.post('http://localhost:8080/api/assignment/createAssignment', {
-          courseId: this.id,
-          creatorId: this.user.id,
-          title: this.formData.title,
-          description: this.formData.description,
-          dueDate: this.formData.dueDate
+    onUpload(event) {
+      const file = event.target.files[0]
+      const S3CustomClient = new AWSS3UploadAshClient(this.config);
+      S3CustomClient.uploadFile(
+        file,
+        file.type,
+        undefined,
+        file.name,
+        "public-read",
+      )
+        .then(response => {
+          this.file = {
+            name: response.key,
+            url: response.location
+          };
+          this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'อัพโหลดไฟล์สำเร็จ', life: 3000 });
         })
+        .catch(err => { this.$toast.add({ severity: 'error', summary: 'สำเร็จ', detail: err, life: 3000 }) })
+    },
+
+    async createAssignment() {
+      let data = {
+        courseId: this.id,
+        creatorId: this.user.id,
+        title: this.formData.title,
+        description: this.formData.description,
+        dueDate: this.formData.dueDate,
+        fileName: this.file.name,
+        fileUrl: this.file.url
+      }
+      try {
+        await axios.post('http://localhost:8080/api/assignment/createAssignment', data)
         this.visible = false
-        this.uploadFile(this.file, res.data.newAssignment.id)
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มงานมอบหมายสำเร็จ!', life: 3000 });
         this.resetFormAssignment()
         this.getCourse()
@@ -434,26 +459,16 @@ export default {
       }
     },
 
-    async deleteAssignment(id) {
-      try {
-        const res = await axios.delete(`http://localhost:8080/api/assignment/deleteAssignment/${id}`)
-        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบงานมอบหมายสำเร็จ!', life: 3000 });
-        this.getCourse()
-      } catch (error) {
-        console.log(error)
-        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
-      }
-    },
-
     async createLecture() {
-
+      let data = {
+        courseId: this.id,
+        content: this.formLecture.content,
+        fileName: this.file.name,
+        fileUrl: this.file.url
+      }
       try {
-        const res = await axios.post('http://localhost:8080/api/lecture/createLecture', {
-          courseId: this.id,
-          content: this.formLecture.content,
-        })
+        await axios.post('http://localhost:8080/api/lecture/createLecture', data)
         this.visibleLecture = false
-        this.uploadFileToLecture(this.file, res.data.newLecture.id)
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.resetFormLecture()
         this.getCourse()
@@ -463,9 +478,20 @@ export default {
       }
     },
 
+    async deleteAssignment(id) {
+      try {
+        await axios.delete(`http://localhost:8080/api/assignment/deleteAssignment/${id}`)
+        this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบงานมอบหมายสำเร็จ!', life: 3000 });
+        this.getCourse()
+      } catch (error) {
+        console.log(error)
+        this.$toast.add({ severity: 'error', summary: 'ล้มเหลว', detail: error.message, life: 3000 });
+      }
+    },
+
     async deleteLecture(id) {
       try {
-        const res = await axios.delete(`http://localhost:8080/api/lecture/deleteLecture/${id}`)
+        await axios.delete(`http://localhost:8080/api/lecture/deleteLecture/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -474,31 +500,9 @@ export default {
       }
     },
 
-    onUpload(event) {
-      const file = event.target.files[0]
-      this.file = file
-    },
-
-    async uploadFileToLecture(file, lectureId) {
-      try {
-        const starsRef = storageRef(storage, `lecture/${lectureId}/${file.name}`)
-        await uploadBytes(starsRef, this.file)
-      } catch (error) {
-        console.log(error)
-      }
-    },
-
-    async uploadFile(file, assignmentId) {
-      try {
-        const starsRef = storageRef(storage, `assignment/${assignmentId}/${file.name}`)
-        await uploadBytes(starsRef, this.file)
-      } catch (error) {
-        console.log(error)
-      }
-    },
     async createPost() {
       try {
-        const res = await axios.post('http://localhost:8080/api/post/createPost', {
+        await axios.post('http://localhost:8080/api/post/createPost', {
           courseId: this.id,
           authorId: this.user.id,
           content: this.centent
@@ -514,7 +518,7 @@ export default {
 
     async deletePost(id) {
       try {
-        const res = await axios.delete(`http://localhost:8080/api/post/deletePost/${id}`)
+        await axios.delete(`http://localhost:8080/api/post/deletePost/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบโพสสำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -525,7 +529,7 @@ export default {
 
     async createComment() {
       try {
-        const res = await axios.post('http://localhost:8080/api/comment/createComment', {
+        await axios.post('http://localhost:8080/api/comment/createComment', {
           postId: this.postId,
           authorId: this.user.id,
           content: this.centent
@@ -543,7 +547,7 @@ export default {
     async deleteComment(id) {
       console.log(id)
       try {
-        const res = await axios.delete(`http://localhost:8080/api/comment/deleteComment/${id}`)
+        await axios.delete(`http://localhost:8080/api/comment/deleteComment/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบคอมเมนต์สำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -555,7 +559,7 @@ export default {
     async exitCourse(id) {
       console.log(id)
       try {
-        const res = await axios.post(`http://localhost:8080/api/enrollment/exitCourse`, {
+        await axios.post(`http://localhost:8080/api/enrollment/exitCourse`, {
           courseId: this.id,
           userId: this.user.id
         })
@@ -574,42 +578,9 @@ export default {
             id: this.id
           }
         })
-
         this.authorId = res.data.owners[0].user.id
-
-        const data = res.data.assignments
-        await Promise.all(
-          data.map(async (item) => {
-            const starsRef = storageRef(storage, `assignment/${item.id}`)
-            const search = await listAll(starsRef)
-            item.file = []
-
-            await Promise.all(
-              search.items.map(async (file) => {
-                const download = await getDownloadURL(file)
-                item.file.push({ url: download.toString(), name: file.name })
-              })
-            )
-          })
-        )
-
-        const dataLecture = res.data.lectures
-        await Promise.all(
-          dataLecture.map(async (item) => {
-            const starsRef = storageRef(storage, `lecture/${item.id}`)
-            const search = await listAll(starsRef)
-            item.file = []
-
-            await Promise.all(
-              search.items.map(async (file) => {
-                const download = await getDownloadURL(file)
-                item.file.push({ url: download.toString(), name: file.name })
-              })
-            )
-          })
-        )
-        this.listAssignment = data
-        this.listLecture = dataLecture
+        this.listAssignment = res.data.assignments ? res.data.assignments : []
+        this.listLecture = res.data.lectures ? res.data.lectures : []
         this.course = Object(res.data)
         this.listPost = Object(res.data.posts)
         this.member = this.course.enrollments.length

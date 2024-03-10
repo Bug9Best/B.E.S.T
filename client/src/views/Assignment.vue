@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       asssignment: {},
-      userId: null
+      userId: null,
     }
   },
   created() {

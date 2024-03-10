@@ -1,3 +1,5 @@
+/* eslint-disable vue/no-reserved-component-names */
+/* eslint-disable vue/multi-word-component-names */
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -34,7 +36,6 @@ import ToastService from 'primevue/toastservice';
 import ProgressBar from 'primevue/progressbar';
 import ProgressSpinner from 'primevue/progressspinner';
 import Avatar from 'primevue/avatar';
-import AvatarGroup from 'primevue/avatargroup';
 
 import Sidebar from 'primevue/sidebar';
 import Menu from 'primevue/menu';
@@ -52,7 +53,6 @@ import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
 import { firebaseApp } from "./firebase";
 import { VueFire } from "vuefire";
-import io from 'socket.io-client'
 
 const app = createApp(App)
 
