@@ -25,9 +25,10 @@ router.post("/createComment", async (req, res) => {
     }
 });
 
-router.delete("/deleteComment", async (req, res) => {
+router.delete("/deleteComment/:id", async (req, res) => {
+    const id = req.params.id;
     try {
-        let comment = await commentService.remove(req.courseId);
+        let comment = await commentService.remove(id);
         res.json(comment);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });
