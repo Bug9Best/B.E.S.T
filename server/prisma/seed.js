@@ -65,6 +65,26 @@ async function main() {
                 degree: "Bechelor",
                 role: "Sdudent",
             },
+            {
+                id: 7,
+                username: "it64070046",
+                password: "123456",
+                email: "64070046@it.kmitl.ac.th",
+                fullname: "นายธรรมปพร ประทุม",
+                generation: "IT19",
+                degree: "Bechelor",
+                role: "Sdudent",
+            },
+            {
+                id: 8,
+                username: "it64070054",
+                password: "123456",
+                email: "64070054@it.kmitl.ac.th",
+                fullname: "นายนรภัทร ศรีมูลน้อย",
+                generation: "IT19",
+                degree: "Bechelor",
+                role: "Sdudent",
+            },
         ]
     });
 
