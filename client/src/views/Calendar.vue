@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="card fadein animation-duration-200">
         <FullCalendar class='demo-app-calendar' :options='calendarOptions'>
@@ -23,7 +24,7 @@
                 <div class="col">
                     <p class="font-bold">จบ</p>
                     <i class="pi pi-clock mr-2"></i>
-                    {{ dueDate || '-'}}
+                    {{ dueDate || '-' }}
                 </div>
             </div>
         </div>
@@ -40,7 +41,7 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './utils/event-utils'
+import { INITIAL_EVENTS } from './utils/event-utils'
 
 export default defineComponent({
     components: {
@@ -119,7 +120,7 @@ export default defineComponent({
 
         async getAssignment() {
             try {
-                const res = await axios.get("http://localhost:8080/api/assignment/getAssignment")
+                const res = await axios.get("http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/assignment/getAssignment")
                 const data = res.data
                 console.log(data)
                 this.calendarOptions.events = data.map((item) => {

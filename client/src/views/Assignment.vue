@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="card layouts flex flex-column align-items-center fadein animation-duration-200">
     <div v-if="!asssignment" class="flex flex-column align-items-center">
@@ -69,7 +70,7 @@ export default {
     },
     async getAssignment() {
       try {
-        const res = await axios.get(`http://localhost:8080/api/user/assignment/${this.userId}`)
+        const res = await axios.get(`http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/user/assignment/${this.userId}`)
         const data = res.data
 
         await Promise.all(

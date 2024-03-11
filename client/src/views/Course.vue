@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="card fadein animation-duration-200">
     <div class="flex justify-content-end mb-4">
@@ -188,7 +189,7 @@ export default {
         rejectLabel: 'ยกเลิก',
         accept: async () => {
           try {
-            const res = await axios.post('http://localhost:8080/api/enrollment/createEnroll', {
+             await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/enrollment/createEnroll', {
               courseId: id,
               userId: this.user.id
             })
@@ -204,7 +205,7 @@ export default {
 
     async createCourse() {
       try {
-        const res = await axios.post('http://localhost:8080/api/course/createCourse', this.formData)
+        await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/course/createCourse', this.formData)
         this.visible = false
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มคอร์สเรียนสำเร็จ!', life: 3000 });
         this.resetForm()
@@ -217,7 +218,7 @@ export default {
 
     async getEnroll() {
       try {
-        const res = await axios.get('http://localhost:8080/api/enrollment/getEnroll',
+        const res = await axios.get('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/enrollment/getEnroll',
           {
             params: {
               id: this.user.id
@@ -232,7 +233,7 @@ export default {
 
     async getCourse() {
       try {
-        const res = await axios.get('http://localhost:8080/api/course/getCourse')
+        const res = await axios.get('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/course/getCourse')
         this.listCourses = res.data
       } catch (error) {
         console.log(error)

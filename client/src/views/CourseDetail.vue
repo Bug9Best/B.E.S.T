@@ -407,7 +407,7 @@ export default {
         if (this.user.id == receiverId) {
           return alert('ไม่สามารถส่งข้อความถึงตัวเองได้')
         }
-        await axios.post('http://localhost:8080/api/chat/create', {
+        await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/chat/create', {
           senderId: this.user.id,
           receiverId: receiverId
         })
@@ -448,7 +448,7 @@ export default {
         fileUrl: this.file.url
       }
       try {
-        await axios.post('http://localhost:8080/api/assignment/createAssignment', data)
+        await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/assignment/createAssignment', data)
         this.visible = false
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มงานมอบหมายสำเร็จ!', life: 3000 });
         this.resetFormAssignment()
@@ -467,7 +467,7 @@ export default {
         fileUrl: this.file.url
       }
       try {
-        await axios.post('http://localhost:8080/api/lecture/createLecture', data)
+        await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/lecture/createLecture', data)
         this.visibleLecture = false
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.resetFormLecture()
@@ -480,7 +480,7 @@ export default {
 
     async deleteAssignment(id) {
       try {
-        await axios.delete(`http://localhost:8080/api/assignment/deleteAssignment/${id}`)
+        await axios.delete(`http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/assignment/deleteAssignment/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบงานมอบหมายสำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -491,7 +491,7 @@ export default {
 
     async deleteLecture(id) {
       try {
-        await axios.delete(`http://localhost:8080/api/lecture/deleteLecture/${id}`)
+        await axios.delete(`http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/lecture/deleteLecture/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบเอกสารประกอบการเรียนสำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -502,7 +502,7 @@ export default {
 
     async createPost() {
       try {
-        await axios.post('http://localhost:8080/api/post/createPost', {
+        await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/post/createPost', {
           courseId: this.id,
           authorId: this.user.id,
           content: this.centent
@@ -518,7 +518,7 @@ export default {
 
     async deletePost(id) {
       try {
-        await axios.delete(`http://localhost:8080/api/post/deletePost/${id}`)
+        await axios.delete(`http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/post/deletePost/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบโพสสำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -529,7 +529,7 @@ export default {
 
     async createComment() {
       try {
-        await axios.post('http://localhost:8080/api/comment/createComment', {
+        await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/comment/createComment', {
           postId: this.postId,
           authorId: this.user.id,
           content: this.centent
@@ -547,7 +547,7 @@ export default {
     async deleteComment(id) {
       console.log(id)
       try {
-        await axios.delete(`http://localhost:8080/api/comment/deleteComment/${id}`)
+        await axios.delete(`http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/comment/deleteComment/${id}`)
         this.$toast.add({ severity: 'warn', summary: 'สำเร็จ', detail: 'ลบคอมเมนต์สำเร็จ!', life: 3000 });
         this.getCourse()
       } catch (error) {
@@ -559,7 +559,7 @@ export default {
     async exitCourse(id) {
       console.log(id)
       try {
-        await axios.post(`http://localhost:8080/api/enrollment/exitCourse`, {
+        await axios.post(`http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/enrollment/exitCourse`, {
           courseId: this.id,
           userId: this.user.id
         })
@@ -573,7 +573,7 @@ export default {
 
     async getCourse() {
       try {
-        const res = await axios.get('http://localhost:8080/api/course/getCourse/:id', {
+        const res = await axios.get('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/course/getCourse/:id', {
           params: {
             id: this.id
           }

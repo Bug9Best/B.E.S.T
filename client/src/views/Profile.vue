@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="card layouts flex flex-column justify-content-center align-items-center fadein animation-duration-200">
       <i class="pi pi-exclamation-circle text-300 text-7xl"></i>

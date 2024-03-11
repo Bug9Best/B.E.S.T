@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="card layouts flex flex-column justify-content-center fadein animation-duration-200">
         <div class="surface-section text-center">

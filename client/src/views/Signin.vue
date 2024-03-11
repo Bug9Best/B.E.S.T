@@ -44,7 +44,7 @@ export default {
 
     async login() {
       try {
-        const res = await axios.post('http://localhost:8080/api/auth/loginCred', {
+        const res = await axios.post('http://ec2-34-226-200-25.compute-1.amazonaws.com:8080/api/auth/loginCred', {
           username: this.username,
           password: this.password
         })
