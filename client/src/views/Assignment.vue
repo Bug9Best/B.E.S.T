@@ -21,10 +21,10 @@
           </div>
           <div class="px-3 py-1">{{ item.description }}</div>
           <hr />
-          <div class="flex flex-column px-3 py-1" v-if="item.file">
+          <div class="flex flex-column px-3 py-1" v-if="item.fileName">
             <div class="font-bold text-base">ไฟล์แนบ</div>
-            <a class="file-container mt-2" v-for="(file, index) in item.file" :key="index" :href="file.url">
-              {{ file.name }}
+            <a class="file-container mt-2" :href="item.fileUrl">
+              {{ item.fileName }}
             </a>
           </div>
         </div>
