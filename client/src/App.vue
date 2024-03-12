@@ -4,7 +4,7 @@ import { RouterView } from 'vue-router'
 
 <template>
   <RouterView />
-  <Toast position="bottom-right"></Toast>
+  <Toast position="bottom-right"/>
   <ConfirmDialog></ConfirmDialog>
 </template>
 

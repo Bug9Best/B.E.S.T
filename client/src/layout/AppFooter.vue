@@ -12,6 +12,6 @@ const logoUrl = computed(() => {
 <template>
     <div class="layout-footer">
         Developed by
-        <span class="font-medium ml-2">Bug9Best</span>
+        <span class="font-medium ml-2">Bug9Best </span>
     </div>
 </template>

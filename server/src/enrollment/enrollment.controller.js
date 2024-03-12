@@ -25,12 +25,13 @@ router.post("/createEnroll", async (req, res) => {
     }
 });
 
-router.delete("/deleteEnoll/:id", async (req, res) => {
+router.post("/exitCourse", async (req, res) => {
     try {
-        const id = req.params.id;
-        let course = await enrollmentService.remove(id);
+        const data = req.body;
 
-        res.json(course);
+        let exitCourse = await enrollmentService.exit(data.courseId, data.userId);
+
+        res.json(exitCourse);
     } catch (e) {
         res.status(e.status || 500).json({ message: e.message });
     }

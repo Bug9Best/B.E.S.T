@@ -14,9 +14,13 @@ export const create = async (courseId, authorId, content) => {
 };
 
 export const remove = async (postId) => {
+    const removeComment = await prisma.comments.deleteMany({
+        where: { postId: parseInt(postId) },
+    });
+
     const removePost = await prisma.post.delete({
         where: { id: parseInt(postId) },
     });
 
-    return { removePost };
+    return { removeComment, removePost };
 }

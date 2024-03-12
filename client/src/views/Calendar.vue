@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="card fadein animation-duration-200">
         <FullCalendar class='demo-app-calendar' :options='calendarOptions'>
@@ -10,20 +11,20 @@
 
     <Dialog :header="title" v-model:visible="displayDetail" :style="{ width: '30vw' }" :modal="true">
         <div class="p-fluid">
-            <div class="p-field">
-                <p class="font-bold"> Description </p>
-                <p>-</p>
+            <div class="p-field mb-4">
+                <div class="font-bold mb-1 text-lg"> รายละเอียด </div>
+                <div>{{ description }}</div>
             </div>
             <div class="grid">
                 <div class="col">
-                    <p class="font-bold">Start</p>
+                    <p class="font-bold">เริ่ม</p>
                     <i class="pi pi-clock mr-2"></i>
                     {{ startDate }}
                 </div>
                 <div class="col">
-                    <p class="font-bold">End</p>
+                    <p class="font-bold">จบ</p>
                     <i class="pi pi-clock mr-2"></i>
-                    {{ endDate }}
+                    {{ dueDate || '-' }}
                 </div>
             </div>
         </div>
@@ -34,12 +35,13 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { defineComponent } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { INITIAL_EVENTS, createEventId } from './utils/event-utils'
+import { INITIAL_EVENTS } from './utils/event-utils'
 
 export default defineComponent({
     components: {
@@ -48,8 +50,10 @@ export default defineComponent({
     data() {
         return {
             title: '',
+            description: '',
             startDate: '',
-            endDate: '',
+            dueDate: '',
+
             displayAdd: false,
             displayDetail: false,
             calendarOptions: {
@@ -72,55 +76,67 @@ export default defineComponent({
                 weekends: true,
                 select: this.handleDateSelect,
                 eventClick: this.handleEventClick,
-                eventsSet: this.handleEvents
-                /* you can update a remote database when these fire:
-                eventAdd:
-                eventChange:
-                eventRemove:
-                */
+                eventsSet: this.handleEvents,
+                locales: [
+                    {
+                        code: 'th',
+                        buttonText: {
+                            prev: 'ก่อนหน้า',
+                            next: 'ถัดไป',
+                            today: 'วันนี้',
+                            month: 'เดือน',
+                            week: 'สัปดาห์',
+                            day: 'วัน',
+                            list: 'แผนงาน',
+                        },
+                        weekText: 'สัปดาห์',
+                        allDayText: 'ตลอดวัน',
+                        moreLinkText: 'เพิ่มเติม',
+                        noEventsText: 'ไม่มีกิจกรรม',
+                    },
+                ],
+
             },
             currentEvents: [],
         }
     },
+    mounted() {
+        this.getAssignment()
+    },
     methods: {
-        handleWeekendsToggle() {
-            this.calendarOptions.weekends = !this.calendarOptions.weekends // update a property
-        },
-        handleDateSelect(selectInfo) {
-            let title = prompt('Please enter a new title for your event')
-            let calendarApi = selectInfo.view.calendar
-            calendarApi.unselect() // clear date selection
-            if (title) {
-                calendarApi.addEvent({
-                    id: createEventId(),
-                    title,
-                    start: selectInfo.startStr,
-                    end: selectInfo.endStr,
-                    allDay: selectInfo.allDay
-                })
-            }
-        },
         handleEventClick(clickInfo) {
             let start = clickInfo.event.startStr
             let end = clickInfo.event.endStr
             this.displayDetail = true;
             this.title = clickInfo.event.title;
+            this.description = clickInfo.event.extendedProps["description"];
             this.startDate = start.slice(8, 10) + '-' + start.slice(5, 7) + '-' + start.slice(0, 4);
-            this.endDate = end.slice(8, 10) + '-' + end.slice(5, 7) + '-' + end.slice(0, 4);
+            this.dueDate = end.slice(8, 10) + '-' + end.slice(5, 7) + '-' + end.slice(0, 4);
             console.log(clickInfo.event)
-            // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-            //     clickInfo.event.remove()
-            // }
         },
         handleEvents(events) {
             this.currentEvents = events
         },
+
+        async getAssignment() {
+            try {
+                const res = await axios.get("http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/assignment/getAssignment")
+                const data = res.data
+                console.log(data)
+                this.calendarOptions.events = data.map((item) => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        start: item.createdAt,
+                        end: item.dueDate,
+                        description: item.description,
+                        allDay: true,
+                    }
+                })
+            } catch (error) {
+                console.log(error)
+            }
+        },
     }
 })
 </script>
-
-<!-- <template>
-    <div>
-        
-    </div>
-</template> -->

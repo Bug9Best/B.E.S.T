@@ -21,28 +21,27 @@ model User {
   role       String
   createdAt  DateTime @default(now())
 
-  owners           OwnerCourse[]
-  enrollments      Enrollment[]
-  assignments      Assignment[]
-  posts            Post[]
-  comments         Comments[]
-  notify           Notify[]
-  sentMessages     Message[]     @relation("Sender")
-  receivedMessages Message[]     @relation("Receiver")
-  chats            Chat[]        @relation("UserToChat")
+  owners      OwnerCourse[]
+  enrollments Enrollment[]
+  assignments Assignment[]
+  posts       Post[]
+  comments    Comments[]
+  Receiver    RoomChat[]    @relation("ChatUser2")
+  Sender      RoomChat[]    @relation("ChatUser1")
+  Message     Message[]
 }
 
 model Course {
   id          Int           @id @default(autoincrement())
-  code        String        @unique
+  code        String
   term        String
   title       String
   description String
   owners      OwnerCourse[]
   enrollments Enrollment[]
+  lectures    Lecture[]
   assignments Assignment[]
   posts       Post[]
-  File        File[]
 }
 
 model OwnerCourse {
@@ -61,6 +60,16 @@ model Enrollment {
   student  User   @relation(fields: [userId], references: [id])
 }
 
+model Lecture {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  content   String
+  fileName  String
+  fileUrl   String
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id])
+}
+
 model Assignment {
   id          Int      @id @default(autoincrement())
   courseId    Int
@@ -68,10 +77,11 @@ model Assignment {
   title       String
   description String
   dueDate     DateTime
+  fileName    String
+  fileUrl     String
   createdAt   DateTime @default(now())
   creator     User     @relation(fields: [creatorId], references: [id])
   course      Course   @relation(fields: [courseId], references: [id])
-  files       File[]
 }
 
 model Post {
@@ -83,7 +93,6 @@ model Post {
   comments  Comments[]
   author    User       @relation(fields: [authorId], references: [id])
   course    Course     @relation(fields: [courseId], references: [id])
-  files     File[]
 }
 
 model Comments {
@@ -96,49 +105,24 @@ model Comments {
   post      Post     @relation(fields: [postId], references: [id])
 }
 
-model File {
-  id           Int         @id @default(autoincrement())
-  filename     String
-  path         String
-  createdAt    DateTime    @default(now())
-  courseId     Int?
-  postId       Int?
-  assignmentId Int?
-  course       Course?     @relation(fields: [courseId], references: [id])
-  post         Post?       @relation(fields: [postId], references: [id])
-  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
-}
-
-model Chat {
+//chat model
+model RoomChat {
   id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  userId    Int?
-  users     User[]    @relation("UserToChat")
+  name      String
   messages  Message[]
+  senderId  Int
+  sender    User      @relation("ChatUser1", fields: [senderId], references: [id])
+  receiveId Int
+  receive   User      @relation("ChatUser2", fields: [receiveId], references: [id])
+  createdAt DateTime  @default(now())
 }
 
 model Message {
-  id         Int      @id @default(autoincrement())
-  content    String
-  senderId   Int
-  receiverId Int
-  chatId     Int
-  createdAt  DateTime @default(now())
-  sender     User     @relation("Sender", fields: [senderId], references: [id])
-  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
-  chat       Chat     @relation(fields: [chatId], references: [id])
-}
-
-enum NotifyStatus {
-  READ
-  UNREAD
-}
-
-model Notify {
-  id        Int          @id @default(autoincrement())
-  message   String
-  status    NotifyStatus @default(UNREAD)
-  createdAt DateTime     @default(now())
+  id        Int      @id @default(autoincrement())
+  content   String
   userId    Int
-  User      User         @relation(fields: [userId], references: [id])
+  chatId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  chat      RoomChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }

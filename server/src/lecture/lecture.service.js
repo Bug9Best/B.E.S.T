@@ -5,34 +5,30 @@ import createHttpError from "http-errors";
 
 export const getAll = async () => {
     try {
-        const allAssignment = await prisma.assignment.findMany();
-        return allAssignment;
+        const allAssignment = await prisma.lecture.findMany();
+        return { allAssignment };
     } catch (error) {
         throw createHttpError.Unauthorized("this Course not found.");
     }
 }
 
 export const show = async (id) => {
-    const oneAssignment = await prisma.assignment.findUnique({
+    const oneAssignment = await prisma.lecture.findUnique({
         where: { id: id },
     });
 
     if (!oneAssignment) {
         throw createHttpError.Unauthorized("this Course not found.");
     }
-
 };
 
-export const create = async (courseId, creatorId, title, description, dueDate, fileName, fileUrl) => {
-    const newAssignment = await prisma.assignment.create({
+export const create = async (courseId, content, fileName, fileUrl) => {
+    const newLecture = await prisma.lecture.create({
         data: {
             courseId: parseInt(courseId),
-            creatorId: parseInt(creatorId),
-            title: title,
-            description: description,
-            dueDate: dueDate,
+            content: content,
             fileName: fileName,
-            fileUrl: fileUrl,
+            fileUrl: fileUrl
         }
     })
 
@@ -51,15 +47,17 @@ export const create = async (courseId, creatorId, title, description, dueDate, f
     });
 
     enroll.forEach(async (enroll) => {
-        const sendMail = await mailService.onAssign(enroll.student.email, enroll.student.fullname, course.title);
+        const sendMail = await mailService.onLecture(enroll.student.email, enroll.student.fullname, course.title);
     });
 
-    return { newAssignment, enroll };
+
+    return { newLecture, enroll };
 };
 
-export const update = async (assignmentId, title, description) => {
-    const updateAssignment = await prisma.assignment.update({
-        where: { id: parseInt(assignmentId) },
+export const update = async (lectureId, title, description) => {
+
+    const updateAssignment = await prisma.lecture.update({
+        where: { id: parseInt(lectureId) },
         data: {
             title: title,
             description: description,
@@ -69,9 +67,9 @@ export const update = async (assignmentId, title, description) => {
     return updateAssignment;
 }
 
-export const remove = async (assignmentId) => {
-    const removeAssignment = await prisma.assignment.delete({
-        where: { id: parseInt(assignmentId) },
+export const remove = async (lectureId) => {
+    const removeAssignment = await prisma.lecture.delete({
+        where: { id: parseInt(lectureId) },
     });
 
     return removeAssignment;
