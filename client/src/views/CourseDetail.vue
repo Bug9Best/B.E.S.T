@@ -276,7 +276,6 @@ import { required } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import AWSS3UploadAshClient from 'aws-s3-upload-ash';
 
-
 export default {
   name: 'CourseDetail',
   props: {
