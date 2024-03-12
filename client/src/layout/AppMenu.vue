@@ -16,7 +16,6 @@
 
 <script>
 import axios from 'axios'
-import { ref } from 'vue'
 import AppMenuItem from './AppMenuItem.vue'
 import io from 'socket.io-client'
 
@@ -57,14 +56,14 @@ export default {
   },
   mounted() {
     this.getEnrollments()
-    io('http://ec2-18-205-233-29.compute-1.amazonaws.com:4000').on('enroll', () => {
+    io(import.meta.env.VITE_ENDPOINT_SOCKET).on('enroll', () => {
       this.getEnrollments()
     })
   },
   methods: {
     async getEnrollments() {
       try {
-        const res = await axios.get('http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/enrollment/getEnroll', {
+        const res = await axios.get(import.meta.env.VITE_ENDPOINT + '/api/enrollment/getEnroll', {
           params: {
             id: this.user?.id
           }
