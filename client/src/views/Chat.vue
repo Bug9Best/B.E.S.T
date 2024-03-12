@@ -20,7 +20,7 @@ export default {
   },
   mounted() {
     this.getRoomChat()
-    io('http://ec2-18-205-233-29.compute-1.amazonaws.com:4000')
+    io(import.meta.env.VITE_ENDPOINT_SOCKET)
       .on('sendMessage', () => {
         this.getMessage(this.chooseRoomId)
       })
@@ -37,7 +37,7 @@ export default {
     },
     async getRoomChat() {
       try {
-        const res = await axios.get(`http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/user/chat/${this.userId}`)
+        const res = await axios.get(import.meta.env.VITE_ENDPOINT + `/api/user/chat/${this.userId}`)
         this.rooms = res.data
       } catch (error) {
         console.log(error)
@@ -45,7 +45,7 @@ export default {
     },
     async getMessage(chatId) {
       try {
-        const res = await axios.get(`http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/chat/message/${chatId}`)
+        const res = await axios.get(import.meta.env.VITE_ENDPOINT + `/api/chat/message/${chatId}`)
         this.messages = res.data
         this.chooseRoomId = chatId
       } catch (error) {
@@ -54,7 +54,7 @@ export default {
     },
     async sendMessage() {
       try {
-        await axios.post(`http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/chat/message`, {
+        await axios.post(import.meta.env.VITE_ENDPOINT + `/api/chat/message`, {
           message: this.messageValue,
           chatId: this.chooseRoomId,
           userId: this.userId
