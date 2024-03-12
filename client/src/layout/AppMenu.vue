@@ -25,7 +25,6 @@ export default {
   },
   data() {
     return {
-      user: JSON.parse(localStorage.getItem('user')),
       myCourse: [],
       model: [
         {
@@ -55,6 +54,7 @@ export default {
     }
   },
   mounted() {
+    const user = JSON.parse(localStorage.getItem('user'))
     this.getEnrollments()
     io(import.meta.env.VITE_ENDPOINT_SOCKET).on('enroll', () => {
       this.getEnrollments()

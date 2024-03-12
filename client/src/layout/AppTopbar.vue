@@ -87,13 +87,14 @@ export default {
       ]
     }
   },
-  created() {
+  mounted() {
     this.user = JSON.parse(localStorage.getItem('user'))
     this.avatarLabel = this.user.fullname
       .split(' ')
       .map((n) => n[0])
       .join('')
   },
+
   methods: {
     toggle(event) {
       this.$refs.menu.toggle(event);
