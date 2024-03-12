@@ -36,9 +36,6 @@
 
 <script>
 import axios from 'axios'
-import { ref as storageRef, getDownloadURL, listAll } from 'firebase/storage'
-import { useFirebaseStorage } from 'vuefire'
-const storage = useFirebaseStorage()
 export default {
   data() {
     return {
@@ -72,21 +69,6 @@ export default {
       try {
         const res = await axios.get(import.meta.env.VITE_ENDPOINT + `/api/user/assignment/${this.userId}`)
         const data = res.data
-
-        await Promise.all(
-          data.map(async (item) => {
-            const starsRef = storageRef(storage, `assignment/${item.id}`)
-            const search = await listAll(starsRef)
-            item.file = []
-
-            await Promise.all(
-              search.items.map(async (file) => {
-                const download = await getDownloadURL(file)
-                item.file.push({ url: download.toString(), name: file.name })
-              })
-            )
-          })
-        )
         const group = await this.groupByDate(data)
         console.log(group)
         this.asssignment = group
