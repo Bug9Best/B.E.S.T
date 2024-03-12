@@ -51,14 +51,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
-import { firebaseApp } from "./firebase";
-import { VueFire } from "vuefire";
 
 const app = createApp(App)
-
-app.use(VueFire, {
-    firebaseApp,
-});
 
 app.use(router)
 app.use(PrimeVue, { ripple: true });
