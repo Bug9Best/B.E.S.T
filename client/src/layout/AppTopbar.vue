@@ -67,7 +67,7 @@ const isOutsideClicked = (event) => {
 export default {
   data() {
     return {
-      user: {},
+      user: null,
       avatarLabel: '',
       items: [
         {
@@ -88,11 +88,14 @@ export default {
     }
   },
   mounted() {
-    this.user = JSON.parse(localStorage.getItem('user'))
-    this.avatarLabel = this.user.fullname
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (user) {
+      this.user = user
+      this.avatarLabel = this.user.fullname
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+    }
   },
 
   methods: {
