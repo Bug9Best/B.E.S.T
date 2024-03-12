@@ -68,7 +68,8 @@ export default {
   data() {
     return {
       user: null,
-      avatarLabel: '',
+      fullname: null,
+      avatarLabel: null,
       items: [
         {
           label: 'หัวข้อ',
@@ -91,6 +92,7 @@ export default {
     const user = JSON.parse(localStorage.getItem('user'))
     if (user) {
       this.user = user
+      this.fullname = this.user.fullname
       this.avatarLabel = this.user.fullname
         .split(' ')
         .map((n) => n[0])
@@ -127,14 +129,14 @@ export default {
       <Button @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"
         class="p-button-text p-button-plain px-3 py-0">
         <div class="flex align-items-center">
-          <p class="mt-3 mr-2 text-lg text-900">{{ this.user?.fullname }}</p>
+          <p class="mt-3 mr-2 text-lg text-900">{{ fullname }}</p>
           <div class="border-circle flex align-items-center justify-content-center" style="
                 background-color: var(--primary-color);
                 color: #ffffff;
                 width: 30px;
                 height: 30px;
               ">
-            {{ this.avatarLabel }}
+            {{ avatarLabel }}
           </div>
         </div>
       </Button>
