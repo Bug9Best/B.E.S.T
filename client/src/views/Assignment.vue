@@ -70,7 +70,7 @@ export default {
     },
     async getAssignment() {
       try {
-        const res = await axios.get(`http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/user/assignment/${this.userId}`)
+        const res = await axios.get(import.meta.env.VITE_ENDPOINT + `/api/user/assignment/${this.userId}`)
         const data = res.data
 
         await Promise.all(
