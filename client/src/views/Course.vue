@@ -189,7 +189,7 @@ export default {
         rejectLabel: 'ยกเลิก',
         accept: async () => {
           try {
-             await axios.post('http://ec2-3-89-104-54.compute-1.amazonaws.com:8080/api/enrollment/createEnroll', {
+             await axios.post('http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/enrollment/createEnroll', {
               courseId: id,
               userId: this.user.id
             })
@@ -205,7 +205,7 @@ export default {
 
     async createCourse() {
       try {
-        await axios.post('http://ec2-3-89-104-54.compute-1.amazonaws.com:8080/api/course/createCourse', this.formData)
+        await axios.post('http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/course/createCourse', this.formData)
         this.visible = false
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: 'เพิ่มคอร์สเรียนสำเร็จ!', life: 3000 });
         this.resetForm()
@@ -218,7 +218,7 @@ export default {
 
     async getEnroll() {
       try {
-        const res = await axios.get('http://ec2-3-89-104-54.compute-1.amazonaws.com:8080/api/enrollment/getEnroll',
+        const res = await axios.get('http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/enrollment/getEnroll',
           {
             params: {
               id: this.user.id
@@ -233,7 +233,7 @@ export default {
 
     async getCourse() {
       try {
-        const res = await axios.get('http://ec2-3-89-104-54.compute-1.amazonaws.com:8080/api/course/getCourse')
+        const res = await axios.get('http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/course/getCourse')
         this.listCourses = res.data
       } catch (error) {
         console.log(error)

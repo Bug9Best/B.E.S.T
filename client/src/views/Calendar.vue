@@ -120,7 +120,7 @@ export default defineComponent({
 
         async getAssignment() {
             try {
-                const res = await axios.get("http://ec2-3-89-104-54.compute-1.amazonaws.com:8080/api/assignment/getAssignment")
+                const res = await axios.get("http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/assignment/getAssignment")
                 const data = res.data
                 console.log(data)
                 this.calendarOptions.events = data.map((item) => {

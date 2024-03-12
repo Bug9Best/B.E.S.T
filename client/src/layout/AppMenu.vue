@@ -57,14 +57,14 @@ export default {
   },
   mounted() {
     this.getEnrollments()
-    io('http://ec2-3-89-104-54.compute-1.amazonaws.com:4000').on('enroll', () => {
+    io('http://ec2-18-205-233-29.compute-1.amazonaws.com:4000').on('enroll', () => {
       this.getEnrollments()
     })
   },
   methods: {
     async getEnrollments() {
       try {
-        const res = await axios.get('http://ec2-3-89-104-54.compute-1.amazonaws.com:8080/api/enrollment/getEnroll', {
+        const res = await axios.get('http://ec2-18-205-233-29.compute-1.amazonaws.com:8080/api/enrollment/getEnroll', {
           params: {
             id: this.user?.id
           }
