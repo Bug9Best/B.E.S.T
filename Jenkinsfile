@@ -13,9 +13,21 @@ pipeline {
       }
     }
 
-    stage('build image'){
+stage('Build Docker Image') {
+            steps {
+                    // Build the Docker image
+
+                    dir('./') {
+                       sh 'echo "Running in $(pwd)"'
+                       sh 'docker compose build'
+                    }
+
+            }
+        }
+
+    stage('deploy image'){
       steps {
-        sh 'docker-compose up -d'
+        sh 'docker compose up -d'
       }
     }
   }
