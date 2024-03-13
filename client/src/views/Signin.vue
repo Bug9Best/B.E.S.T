@@ -90,13 +90,13 @@ export default {
         })
 
         if (res) {
-          console.log(res.data)
           localStorage.setItem('token', res.data.token)
           localStorage.setItem('user', JSON.stringify(res.data.user))
           this.$router.push('/course')
         }
       } catch (err) {
-        console.log(err.message)
+        alert(err.response.data.message)
+        this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: err.response.data.message, life: 3000 });
       }
     }
   }
