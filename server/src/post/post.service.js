@@ -1,5 +1,5 @@
 const prisma = new PrismaClient();
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient} from "@prisma/client";
 
 export const create = async (courseId, authorId, content) => {
     const newPost = await prisma.post.create({

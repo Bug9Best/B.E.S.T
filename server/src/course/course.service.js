@@ -1,5 +1,5 @@
 const prisma = new PrismaClient();
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient} from "@prisma/client";
 import createHttpError from "http-errors";
 import { io } from "../socket/index.js"
 

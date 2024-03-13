@@ -1,0 +1,42 @@
+services: 
+  bestxclient:
+    build:
+      context: ./client
+      target: dev
+    container_name: bestxclient
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 8080:8080
+
+  bestxserver:
+    build:
+      context: ./server
+      target: dev
+    container_name: bestxserver
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 8081:8081
+
+  db:
+    image: postgres
+    restart: always
+    container_name: bestxdb
+    volumes:
+      - bextxdb:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: bestxdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 5432:5432
+
+volumes:
+  bextxdb: 
+    name: bestxdb
+    driver: local

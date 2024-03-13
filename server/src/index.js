@@ -15,7 +15,7 @@ import chat from "./chat/chat.controller.js";
 import testSocket from "./testSocket/index.js";
 import { connectSocket } from "./socket/index.js";
 
-const port = 8080;
+const port = 8081;
 const app = express();
 const router = express.Router();
 

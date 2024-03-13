@@ -1,7 +1,7 @@
 import { signAccessToken } from "../utils/jwt.js";
 import * as bcrypt from "bcrypt";
 const prisma = new PrismaClient();
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import createHttpError from "http-errors";
 import { authenticate } from "ldap-authentication";
 
