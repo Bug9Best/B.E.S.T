@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8081
 
-CMD npx prisma generate && npx prisma migrate dev && npm run dev
+CMD npx prisma generate && npm run dev
