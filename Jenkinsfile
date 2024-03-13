@@ -1,7 +1,8 @@
 pipeline {
   agent any
   environment {
-    DOCKER_CREDENTIALS = credentials('github')
+    // DOCKER_IMAGE = 'bug9best/fastapi-webhook:latest'
+    DOCKER_CREDENTIALS = credentials('dockerhub')
   }
 
   stages {
