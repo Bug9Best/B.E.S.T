@@ -36,6 +36,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
+  authservice
   try {
     const data = req.body;
     // validate data
@@ -44,7 +45,8 @@ router.post("/register", async (req, res) => {
       throw createHttpError.Unauthorized("data invalid");
     }
     // login
-    const register = await authservice.register(data.email, data.password, data.firstName, data.lastName);
+    let fullname = data.firstName + " " + data.lastName;
+    const register = await authservice.createUser(data.username, data.email, data.password, fullname);
     res.json(register);
   } catch (e) {
     res.status(e.status || 500).json({ message: e.message });

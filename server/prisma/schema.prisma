@@ -11,15 +11,12 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  password   String
-  email      String
-  fullname   String
-  generation String
-  degree     String
-  role       String
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  email     String
+  fullname  String
+  createdAt DateTime @default(now())
 
   owners      OwnerCourse[]
   enrollments Enrollment[]

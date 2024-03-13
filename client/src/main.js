@@ -25,6 +25,8 @@ import Password from 'primevue/password';
 import Dropdown from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
 import Editor from 'primevue/editor';
+import Divider from 'primevue/divider';
+
 
 import Chip from 'primevue/chip';
 import Card from 'primevue/card';
@@ -91,3 +93,4 @@ app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
+app.component('Divider', Divider);

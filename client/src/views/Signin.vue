@@ -28,6 +28,8 @@
 
             <Button type="submit" label="Sign In" class="w-full mt-5"></Button>
           </form>
+          <Divider />
+          <Button @click="goSignup" label="Sign Up" class="p-button-outlined w-full"></Button>
         </section>
       </div>
       <div class="hidden lg:block lg:col-6 overflow-hidden">
@@ -95,9 +97,11 @@ export default {
           this.$router.push('/course')
         }
       } catch (err) {
-        alert(err.response.data.message)
         this.$toast.add({ severity: 'success', summary: 'สำเร็จ', detail: err.response.data.message, life: 3000 });
       }
+    },
+    goSignup() {
+      this.$router.push('/signup')
     }
   }
 }
