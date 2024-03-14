@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Define variables
-        DOCKER_IMAGE_FE       = '7e8jdevv/bestxclient'
-        DOCKER_IMAGE_BE       = '7e8jdevv/bestxserver'
+        DOCKER_IMAGE_FE       = '7e8jdevv/bestxclient:dev'
+        DOCKER_IMAGE_BE       = '7e8jdevv/bestxserver:dev'
         DOCKER_CREDENTIALS = credentials('dockerhub')
     }
 
