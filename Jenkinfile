@@ -56,13 +56,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            node {
-                // Execute commands within a node block
-                sh 'docker logout'
-            }
-        }
-    }
 }
