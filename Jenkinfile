@@ -59,8 +59,10 @@ pipeline {
 
     post {
         always {
-            // Logout from Docker Hub
-            sh 'docker logout'
+            node {
+                // Execute commands within a node block
+                sh 'docker logout'
+            }
         }
     }
 }
