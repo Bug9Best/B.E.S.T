@@ -11,17 +11,17 @@ pipeline {
     stages {
         stage('Start Jenkins') {
             steps {
-                    sh 'echo Start Jenkins............'
-                    sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : password = $DOCKER_CREDENTIALS_PSW'
+                sh 'echo Start Jenkins............'
+                sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : password = $DOCKER_CREDENTIALS_PSW'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                    // Build the Docker image
-                      sh 'echo "Running in $(pwd)"'
-                      sh 'echo start build the Docker image = $DOCKER_IMAGE'
-                      sh 'docker compose build'
+                // Build the Docker image
+                sh 'echo "Running in $(pwd)"'
+                sh 'echo start build the Docker compose'
+                sh 'docker-compose build'
             }
         }
 
@@ -40,19 +40,18 @@ pipeline {
                 script {
                     // Remove Docker images and containers
                     sh 'docker stop $(docker ps -a -q)'  
-                    sh  'docker rm $(docker ps -a -q)' 
-                    sh  'docker rmi $(docker images -q)'
+                    sh 'docker rm $(docker ps -a -q)' 
+                    sh 'docker rmi $(docker images -q)'
                     sh 'docker system prune -af'
                 }
             }
         }
 
-
         stage('Deploy') {
             steps {
                 script {
-                    // Pull the Docker image from Docker Hub
-                    sh 'docker compose up -d'
+                    // Pull the Docker image from Docker Hub and start the containers
+                    sh 'docker-compose up -d'
                 }
             }
         }
