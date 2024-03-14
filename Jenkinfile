@@ -52,6 +52,7 @@ pipeline {
                 script {
                     // Pull the Docker image from Docker Hub and start the containers
                     sh 'docker compose up -d'
+                    sh 'docker exec -it bestxserver npx prisma migrate dev'
                 }
             }
         }
