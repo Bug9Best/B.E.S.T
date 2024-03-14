@@ -1,34 +1,67 @@
 pipeline {
-  agent any
-  environment {
-    // DOCKER_IMAGE = 'bug9best/fastapi-webhook:latest'
-    DOCKER_CREDENTIALS = credentials('dockerhub')
-  }
+    agent any
 
-  stages {
-    stage('jenkins') {
-      steps {
-        sh 'echo Start Jenkins'
-        sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : pass = $DOCKER_CREDENTIALS_PSW'
-      }
+    environment {
+        // Define variables
+        DOCKER_IMAGE_FE       = '7e8jdevv/bestxclient'
+        DOCKER_IMAGE_BE       = '7e8jdevv/bestxserver'
+        DOCKER_CREDENTIALS = credentials('dockerhub')
     }
 
-stage('Build Docker Image') {
+    stages {
+        stage('Start Jenkins') {
             steps {
-                    // Build the Docker image
-
-                    dir('./') {
-                       sh 'echo "Running in $(pwd)"'
-                       sh 'docker compose build'
-                    }
-
+                    sh 'echo Start Jenkins............'
+                    sh 'echo docker : user = $DOCKER_CREDENTIALS_USR : password = $DOCKER_CREDENTIALS_PSW'
             }
         }
 
-    stage('deploy image'){
-      steps {
-        sh 'docker compose up -d'
-      }
+        stage('Build Docker Image') {
+            steps {
+                    // Build the Docker image
+                      sh 'echo "Running in $(pwd)"'
+                      sh 'echo start build the Docker image = $DOCKER_IMAGE'
+                      sh 'docker compose build'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    sh 'echo $DOCKER_CREDENTIALS_PSW | docker login --username $DOCKER_CREDENTIALS_USR --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE_FE'
+                    sh 'docker push $DOCKER_IMAGE_BE'
+                }
+            }
+        }
+
+        stage('Clear Docker Components') {
+            steps {
+                script {
+                    // Remove Docker images and containers
+                    sh 'docker stop $(docker ps -a -q)'  
+                    sh  'docker rm $(docker ps -a -q)' 
+                    sh  'docker rmi $(docker images -q)'
+                    sh 'docker system prune -af'
+                }
+            }
+        }
+
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Pull the Docker image from Docker Hub
+                    sh 'docker compose up -d'
+                }
+            }
+        }
     }
-  }
+
+    post {
+        always {
+            // Logout from Docker Hub
+            sh 'docker logout'
+        }
+    }
 }

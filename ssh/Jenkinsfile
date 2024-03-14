@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        REMOTE_HOST         = 'tuchsanai@34.124.197.62'
+        SSH_CREDENTIALS     = 'ssh_prod_instance'
+    }
+
+    stages {
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USER')]) {
+                    sh 'echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Run Docker Compose on Remote Server') {
+            steps {
+                sshagent([SSH_CREDENTIALS]) {
+                    // Copy the Docker Compose file to the remote server
+                    sh "scp -o StrictHostKeyChecking=no $DOCKER_COMPOSE_FILE $REMOTE_HOST:~/docker-compose.yml"
+                    
+                    // SSH into the remote server and run Docker Compose commands
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker-compose -f ~/docker-compose.yml down'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker-compose -f ~/docker-compose.yml up -d'"
+                    sh "ssh -o StrictHostKeyChecking=no $REMOTE_HOST 'docker-compose -f ~/docker-compose.yml ps'"
+                }
+            }
+        }
+    }
+}
