@@ -21,7 +21,7 @@ pipeline {
                 // Build the Docker image
                 sh 'echo "Running in $(pwd)"'
                 sh 'echo start build the Docker compose'
-                sh 'docker-compose build'
+                sh 'docker compose build'
             }
         }
 
@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     // Pull the Docker image from Docker Hub and start the containers
-                    sh 'docker-compose up -d'
+                    sh 'docker compose up -d'
                 }
             }
         }
